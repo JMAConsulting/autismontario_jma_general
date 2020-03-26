@@ -186,3 +186,29 @@ function jma_customizations_form_alter(&$form, \Drupal\Core\Form\FormStateInterf
     $form['event_type_id']['#options'] = $options;
   }
 }
+
+function jma_customizations_views_pre_render(ViewExecutable &$view) {
+  if ($view->id() == 'event_map') {
+    $results = $view->result;
+    // Find a better way to do this, for now, using a sample event.
+    $event_ent = \Drupal::entityTypeManager()->getStorage('civicrm_event')->load(1327);
+    foreach ($results as $i => &$row) {
+      if (!empty($row->_entity)) {
+        // Event is loaded here.
+        // TODO: Derive the base URL
+        $viewLink = "<a href='https://jma.staging.autismontario.com/civicrm/event/info?reset=1&id=" . $row->_entity->get('id')->value . "' target='_blank'>View event</a>";
+        $row->_entity->set('id', $viewLink);
+      }
+      else {
+        // Contact is loaded here.
+        $contact_ent = \Drupal::entityTypeManager()->getStorage('civicrm_contact')->load($row->id);
+        $row->_entity = $event_ent;
+        $row->_entity->set('title', $contact_ent->get('display_name')->value);
+        // TODO: Derive the base URL
+        $viewLink = "<a href='https://jma.staging.autismontario.com/civicrm/contact/view?reset=1&cid=" . $row->id . "' target='_blank'>View service listing</a>";
+        $row->_entity->set('id', $viewLink);
+      }
+    }
+    $view->result = $results;
+  }
+}
