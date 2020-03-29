@@ -199,6 +199,26 @@ function jma_customizations_views_pre_execute(ViewExecutable &$view) {
     $view2 = Views::getView('contact_map');
     $view2->build('page_1');
     $other_query = $view2->build_info['query'];
+
+    $other_query->addField('civicrm_contact__field_geolocation', 'field_geolocation_lat_sin', 'field_geolocation_lat_sin');
+    $other_query->addField('civicrm_contact__field_geolocation', 'field_geolocation_lat_cos', 'field_geolocation_lat_cos');
+    $other_query->addField('civicrm_contact__field_geolocation', 'field_geolocation_lng_rad', 'field_geolocation_lng_rad');
+
+    $view->build_info['query']->addField('civicrm_event__field_geolocation', 'field_geolocation_lat_sin', 'field_geolocation_lat_sin');
+    $view->build_info['query']->addField('civicrm_event__field_geolocation', 'field_geolocation_lat_cos', 'field_geolocation_lat_cos');
+    $view->build_info['query']->addField('civicrm_event__field_geolocation', 'field_geolocation_lng_rad', 'field_geolocation_lng_rad');
     $view->build_info['query']->union($other_query);
+
+    $query = db_select($view->build_info['query'], 'location')->fields('location');
+
+    // Test values - need to be derived from filters.
+    $lat = 43.3294906;
+    $lng = -79.8204342;
+    $distance = 10;
+
+    $view->build_info['query'] = $query;
+    $fragment = ProximityTrait::getProximityQueryFragment('location', 'field_geolocation', $lat, $lng);
+    $fragment .= " <= :distance";
+    $view->build_info['query']->where($fragment, [':distance' => $distance]);
   }
 }
