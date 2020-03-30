@@ -193,6 +193,7 @@ function jma_customizations_form_alter(&$form, \Drupal\Core\Form\FormStateInterf
 
 function jma_customizations_views_pre_render(ViewExecutable &$view) {
   if ($view->id() == 'event_map') {
+    $view->element['#attached']['library'][] = 'jma_customizations/jma_customizations';
     $results = $view->result;
     // Find a better way to do this, for now, using a sample event.
     $event_ent = \Drupal::entityTypeManager()->getStorage('civicrm_event')->load(1327);
@@ -237,14 +238,23 @@ function jma_customizations_views_pre_execute(ViewExecutable &$view) {
 
     $query = db_select($view->build_info['query'], 'location')->fields('location');
 
-    // Test values - need to be derived from filters.
-    $lat = 43.3294906;
-    $lng = -79.8204342;
-    $distance = 10;
+    if (!empty($view->exposed_data['lat'])) {
+      $lat = $view->exposed_data['lat'];
+    }
+    if (!empty($view->exposed_data['lng'])) {
+      $lng = $view->exposed_data['lng'];
+    }
+    $distance = 16.09344; // 10 Km
+    if (!empty($view->exposed_data['field_geolocation_proximity'])) {
+      $distance = $view->exposed_data['field_geolocation_proximity'];
+    }
+    $query = db_select($view->build_info['query'], 'location')->fields('location');
 
     $view->build_info['query'] = $query;
-    $fragment = ProximityTrait::getProximityQueryFragment('location', 'field_geolocation', $lat, $lng);
-    $fragment .= " <= :distance";
-    $view->build_info['query']->where($fragment, [':distance' => $distance]);
+    if (!empty($lat) && !empty($lng)) {
+      $fragment = ProximityTrait::getProximityQueryFragment('location', 'field_geolocation', $lat, $lng);
+      $fragment .= " <= :distance";
+      $view->build_info['query']->where($fragment, [':distance' => $distance]);
+    }
   }
 }
