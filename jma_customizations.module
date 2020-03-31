@@ -216,6 +216,9 @@ function jma_customizations_views_pre_render(ViewExecutable &$view) {
     }
     $view->result = $results;
   }
+  if ($view->id() == 'search_solr_') {
+    $view->element['#attached']['library'][] = 'jma_customizations/jma_customizations';
+  }
 }
 
 /**
