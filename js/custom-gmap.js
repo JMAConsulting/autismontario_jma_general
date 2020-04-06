@@ -12,4 +12,8 @@
     }
   });
 
+  $('.view-display-id-attachment_1 div.geolocation-map-container').on('click', function(e) {
+    window.open('/map', '_blank');
+  });
+
 })(jQuery, Drupal);
