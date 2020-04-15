@@ -248,3 +248,20 @@ function jma_customizations_views_pre_execute(ViewExecutable &$view) {
     $view->build_info['query']->where($fragment, [':distance' => $distance]);
   }
 }
+
+
+function jma_customizations_login_user_login($account) {
+  $current_route = \Drupal::routeMatch()->getRouteName();
+  $destination = \Drupal::request()->query->get('destination');
+  if ($destination && $destination != '/user/login') {
+    return;
+  }
+  if (!in_array($current_route, ['user.reset', 'user.reset.login'])) {
+    $current_user = \Drupal::currentUser();
+    $roles = (array) $current_user->getRoles();
+    if (in_array('authorized_contact', $roles)) {
+      $response = new RedirectResponse(URL::fromUserInput('/civicrm/service-listing-application')->toString());
+      $response->send();
+    }
+  }
+}
