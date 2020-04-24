@@ -56,6 +56,10 @@ function jma_customizations_views_query_alter(ViewExecutable $view, QueryPluginB
                 if ($condition['field'] == 'civicrm_event.description') {
                     $condition['field'] = 'civicrm_event.description_en_US';
                 }
+                if ($condition['field'] == 'civicrm_value_event_chapter_28_civicrm_event.chapter_325') {
+                  $condition['value'][0] = "([[:cntrl:]]|^)" . $condition['value'][0] . "([[:cntrl:]]|$)";
+                  $condition['operator'] = 'REGEXP';
+                }
             }
         }
     }
