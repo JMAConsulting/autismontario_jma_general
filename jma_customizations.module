@@ -39,6 +39,43 @@ function jma_customizations_css_alter(&$css, \Drupal\Core\Asset\AttachedAssetsIn
     }
 }
 
+function jma_customizations_preprocess_field(&$variables) {
+  if ($variables['entity_type'] == 'civicrm_contact' && $variables['field_name'] == 'organization_name') {
+    $id = $variables['element']['#object']->id();
+    $contactDetails = \civicrm_api3('Contact', 'get', ['id' => $id, 'return' => ['custom_897', 'custom_896']]);
+    $modulePath = \Drupal::moduleHandler()->getModule('jma_customizations')->getPath();
+    if ($variables['element']['#view_mode'] === 'search_teaser') {
+      $size = '16px';
+    }
+    else {
+      $size = '24px';
+    }
+    if (!empty($contactDetails['values'])) {
+      if (!empty($contactDetails['values'][$contactDetails['id']]['custom_897'])) {
+        $servicesProvided = $contactDetails['values'][$contactDetails['id']]['custom_897'];
+        if (in_array(3, $servicesProvided)) {
+          $variables['nearby_service'] = TRUE;
+        }
+        if (in_array(4, $servicesProvided)) {
+          $variables['items'][0]['content']['#value'] .= ' <img src="'. file_create_url($modulePath . '/img/icon_remote_travel_' . $size . '.png') . '" title="Travels to remote areas">';
+        }
+      }
+      if (isset($contactDetails['values'][$contactDetails['id']]['custom_896'])) {
+        if (!empty($contactDetails['values'][$contactDetails['id']]['custom_896'])) {
+          $variables['items'][0]['content']['#value'] .= ' <img src="'. file_create_url($modulePath . '/img/icon_accepting_' . $size . '.png') . '" title="Accepting new clients">';
+        }
+        else {
+          $variables['items'][0]['content']['#value'] .= ' <img src="'. file_create_url($modulePath . '/img/icon_not_accepting_' . $size . '.png') . '" title="Not accepting new clients">';
+        }
+      }
+    }
+  }
+}
+
+function jma_customizations_preprocess(&$variables) {
+  if (isset($variables['entity_type']) && $variables['entity_type'] === 'civicrm_contact') {
+  }
+}
 
 function jma_customizations_views_query_alter(ViewExecutable $view, QueryPluginBase $query)
 {
