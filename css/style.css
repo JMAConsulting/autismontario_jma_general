@@ -1,0 +1,20 @@
+.path-map #edit-coordinates {
+    display: none;
+}
+
+.node--view-mode-teaser.node--type-learning-resource h2::after {
+  content: "Learning Resource";
+  font-size: 12px;
+  font-weight: 700;
+  color: #707070;
+  padding-top: 2em;
+  display: block;
+  text-transform: uppercase;
+  font-style: italic;
+  letter-spacing: 0.5px;
+}
+
+.node--view-mode-teaser.node--type-learning-resource .field--name-field-linked-videos .field__item {
+  margin-bottom: 1em;
+  width: auto;
+}
