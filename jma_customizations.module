@@ -220,7 +220,7 @@ function jma_customizations_views_pre_render(ViewExecutable &$view) {
     }
     $view->result = $results;
   }
-  if ($view->id() == 'search_solr_') {
+  if ($view->id() == 'search_solr_' || $view->id() == 'service_listing') {
     $view->element['#attached']['library'][] = 'jma_customizations/jma_customizations';
   }
 }

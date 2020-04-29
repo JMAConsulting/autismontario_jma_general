@@ -2,6 +2,14 @@
     display: none;
 }
 
+.field--name-custom-893 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* number of lines to show */
+  -webkit-box-orient: vertical;
+}
+
 .node--view-mode-teaser.node--type-learning-resource h2::after {
   content: "Learning Resource";
   font-size: 12px;
@@ -12,6 +20,10 @@
   text-transform: uppercase;
   font-style: italic;
   letter-spacing: 0.5px;
+}
+
+.views-field, .field__item {
+  margin-top: 15px;
 }
 
 .node--view-mode-teaser.node--type-learning-resource .field--name-field-linked-videos .field__item {
