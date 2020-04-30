@@ -1,5 +1,7 @@
 jma_customizations:
   version: 1.0
+  js:
+    js/custom-gmap.js: {}
   css:
     theme:
       css/style.css: {}
