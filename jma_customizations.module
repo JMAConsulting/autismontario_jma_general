@@ -54,7 +54,7 @@ function jma_customizations_preprocess_field(&$variables) {
       if (!empty($contactDetails['values'][$contactDetails['id']]['custom_897'])) {
         $servicesProvided = $contactDetails['values'][$contactDetails['id']]['custom_897'];
         if (in_array(3, $servicesProvided)) {
-          $variables['nearby_service'] = TRUE;
+          $variables['items'][0]['content']['#value'] .= ' <img src="'. file_create_url($modulePath . '/img/icon_local_travel_' . $size . '.png') . '" title="Travels to nearby areas">';
         }
         if (in_array(4, $servicesProvided)) {
           $variables['items'][0]['content']['#value'] .= ' <img src="'. file_create_url($modulePath . '/img/icon_remote_travel_' . $size . '.png') . '" title="Travels to remote areas">';
