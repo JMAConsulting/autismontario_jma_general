@@ -1,0 +1,125 @@
+<?php
+use Drupal\Core\Language\LanguageInterface;
+use Drupal\views\Plugin\views\cache\CachePluginBase;
+use Drupal\views\Plugin\views\query\QueryPluginBase;
+use Drupal\views\Plugin\views\PluginBase;
+use Drupal\views\ViewExecutable;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\views\Views;
+
+function autism_jma_views_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
+    if ($view->id() == 'events') {
+        // Traverse through the 'where' part of the query.
+        foreach ($query->where as &$condition_group) {
+            foreach ($condition_group['conditions'] as &$condition) {
+                // If this is the part of the query filtering on title, chang the
+                // condition to filter on node ID.
+                if ($condition['field'] == 'civicrm_event.title') {
+                    $condition['field'] = 'civicrm_event.title_en_US';
+                }
+                if ($condition['field'] == 'civicrm_event.description') {
+                    $condition['field'] = 'civicrm_event.description_en_US';
+                }
+                if ($condition['field'] == 'civicrm_value_event_chapter_28_civicrm_event.chapter_325') {
+                  $condition['value'][0] = "([[:cntrl:]]|^)" . $condition['value'][0] . "([[:cntrl:]]|$)";
+                  $condition['operator'] = 'REGEXP';
+                }
+            }
+        }
+    }
+}
+
+function autism_jma_views_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
+  if ($form_id === "views_exposed_form" && $form['#id'] == "views-exposed-form-events-page-1") {
+    $anyText = '- Any -';
+    if (\Drupal::languageManager()->getCurrentLanguage()->getId() == 'fr') {
+      $anyText = '- Tous -';
+    }
+    $options = [
+      'All' => $anyText,
+    ];
+    $eventTypes = CRM_Core_DAO::executeQuery("SELECT v.value, v.label AS label, v.name AS name
+      FROM civicrm_event e
+      INNER JOIN civicrm_option_value v ON v.value = e.event_type_id
+      INNER JOIN civicrm_option_group g ON g.id = v.option_group_id
+      WHERE e.is_active = 1 AND g.name = 'event_type' AND DATE_FORMAT(e.start_date, '%Y-%m-%d') >= CURRENT_DATE() GROUP BY v.value ORDER BY v.label")->fetchAll();
+    foreach ($eventTypes as $eventType) {
+      if ($eventType['name'] == "Fundraising with multi pax event") {
+        $eventType['label'] = "Fundraiser";
+      }
+      $options[$eventType['value']] = $eventType['label'];
+    }
+    $form['event_type_id']['#options'] = $options;
+  }
+}
+
+function autism_jma_views_views_pre_render(ViewExecutable &$view) {
+  if ($view->id() == 'event_map') {
+    $view->element['#attached']['library'][] = 'autism_jma_views/autism_jma_views';
+    $results = $view->result;
+    // Find a better way to do this, for now, using a sample event.
+    $event_ent = \Drupal::entityTypeManager()->getStorage('civicrm_event')->load(1327);
+    foreach ($results as $i => &$row) {
+      if (!empty($row->_entity)) {
+        // Event is loaded here.
+        // TODO: Derive the base URL
+        $viewLink = "<a href='https://jma.staging.autismontario.com/civicrm/event/info?reset=1&id=" . $row->_entity->get('id')->value . "' target='_blank'>View event</a>";
+        $row->_entity->set('id', $viewLink);
+      }
+      else {
+        // Contact is loaded here.
+        $contact_ent = \Drupal::entityTypeManager()->getStorage('civicrm_contact')->load($row->id);
+        $row->_entity = $event_ent;
+        $row->_entity->set('title', $contact_ent->get('display_name')->value);
+        // TODO: Derive the base URL
+        $viewLink = "<a href='https://jma.staging.autismontario.com/civicrm/contact/view?reset=1&cid=" . $row->id . "' target='_blank'>View service listing</a>";
+        $row->_entity->set('id', $viewLink);
+      }
+    }
+    $view->result = $results;
+  }
+  if ($view->id() == 'search_solr_' || $view->id() == 'service_listing') {
+    $view->element['#attached']['library'][] = 'autism_jma_views/autism_jma_views';
+  }
+}
+
+/**
+ * Implements hook_views_pre_execute().
+ */
+function autism_jma_views_views_pre_execute(ViewExecutable &$view) {
+  if ($view->id() == 'event_map') {
+    $view2 = Views::getView('contact_map');
+    $view2->build('page_1');
+    $other_query = $view2->build_info['query'];
+
+    $other_query->addField('civicrm_contact__field_geolocation', 'field_geolocation_lat_sin', 'field_geolocation_lat_sin');
+    $other_query->addField('civicrm_contact__field_geolocation', 'field_geolocation_lat_cos', 'field_geolocation_lat_cos');
+    $other_query->addField('civicrm_contact__field_geolocation', 'field_geolocation_lng_rad', 'field_geolocation_lng_rad');
+
+    $view->build_info['query']->addField('civicrm_event__field_geolocation', 'field_geolocation_lat_sin', 'field_geolocation_lat_sin');
+    $view->build_info['query']->addField('civicrm_event__field_geolocation', 'field_geolocation_lat_cos', 'field_geolocation_lat_cos');
+    $view->build_info['query']->addField('civicrm_event__field_geolocation', 'field_geolocation_lng_rad', 'field_geolocation_lng_rad');
+    $view->build_info['query']->union($other_query);
+
+    $query = db_select($view->build_info['query'], 'location')->fields('location');
+
+    if (!empty($view->exposed_data['lat'])) {
+      $lat = $view->exposed_data['lat'];
+    }
+    if (!empty($view->exposed_data['lng'])) {
+      $lng = $view->exposed_data['lng'];
+    }
+    $distance = 16.09344; // 10 Km
+    if (!empty($view->exposed_data['field_geolocation_proximity'])) {
+      $distance = $view->exposed_data['field_geolocation_proximity'];
+    }
+    $query = db_select($view->build_info['query'], 'location')->fields('location');
+
+    $view->build_info['query'] = $query;
+    if (!empty($lat) && !empty($lng)) {
+      $fragment = ProximityTrait::getProximityQueryFragment('location', 'field_geolocation', $lat, $lng);
+      $fragment .= " <= :distance";
+      $view->build_info['query']->where($fragment, [':distance' => $distance]);
+    }
+  }
+}
