@@ -1,0 +1,28 @@
+<?php
+
+function autism_jma_general_css_alter(&$css, \Drupal\Core\Asset\AttachedAssetsInterface $assets) {
+    $uri = \Drupal\Core\Url::fromRoute('<current>');
+    $current_uri = $uri->getInternalPath();
+    $paths = [
+        "civicrm/contribute/transact",
+        "civicrm/event/register",
+        "civicrm/event/info",
+	      "civicrm-event",
+        "civicrm/profile/view",
+        "civicrm/profile/edit",
+        "civicrm/profile/create",
+        "civicrm/contact/map",
+        "webform/civicrm_contact",
+        "webform/civicrm_contact/confirmation",
+        "civicrm/user",
+        "civicrm/feedback",
+        "civicrm/service-listing-application",
+        "civicrm/service-listing-application-confirm",
+        "civicrm/service-listing-thankyou",
+    ];
+    if (strpos($current_uri, 'civicrm') !== false && !in_array($current_uri, $paths)) {
+        unset($css['themes/contrib/adminimal_theme/css/adminimal.css']);
+        unset($css['themes/custom/de_theme/dist/css/de_theme.css']);
+        unset($css['modules/contrib/adminimal_admin_toolbar/css/adminimal_admin_toolbar.css']);
+    }
+}

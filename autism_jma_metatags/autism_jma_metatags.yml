@@ -1,0 +1,8 @@
+name: JMA Customizations for meta tags for AutismOntario
+description: This module contains all the customizations related to meta tags for AutismOntario done by JMA.
+package: Custom
+type: module
+version: 1.0
+core: 8.x
+
+

@@ -1,0 +1,112 @@
+<?php
+define('EVENT_IMAGE', 'custom_833');
+
+function autism_jma_metatags_module_implements_alter(&$implementations, $hook) {
+  if ($hook == 'page_attachments' || $hook == 'page_attachments_alter') {
+
+    // Move my_module_form_alter() to the end of the list.
+    // \Drupal::moduleHandler()->getImplementations()
+    // iterates through $implementations with a foreach loop which PHP iterates
+    // in the order that the items were added, so to move an item to the end of
+    // the array, we remove it and then add it.
+    $group = $implementations['autism_jma_metatags'];
+    unset($implementations['autism_jma_metatags']);
+    $implementations['autism_jma_metatags'] = $group;
+  }
+}
+
+function autism_jma_metatags_page_attachments(array &$page) {
+    $uri = \Drupal\Core\Url::fromRoute('<current>');
+    $current_uri = $uri->getInternalPath();
+    $paths = [
+        "civicrm/event/register",
+        "civicrm/event/info",
+    ];
+    if (strpos($current_uri, 'civicrm') !== false && in_array($current_uri, $paths)) {
+      $eventId = \Drupal::request()->query->get('id');
+      if (!$eventId) {
+        return;
+      }
+      $event = civicrm_api3('Event', 'get', ['id' => $eventId, 'return' => ["title", "summary", EVENT_IMAGE]])['values'];
+      $ogTitle = array(
+        '#tag' => 'meta',
+        '#attributes' => array(
+          'property' => 'og:title',
+          'name' => 'title',
+          'content' => $event[$eventId]['title'],
+        ),
+      );
+
+      $page['#attached']['html_head'][] = [$ogTitle, 'ogTitle'];
+
+      if (!empty($event[$eventId]['summary'])) {
+        $ogDescription = array(
+          '#tag' => 'meta',
+          '#attributes' => array(
+            'property' => 'og:description',
+            'name' => 'description',
+            'content' => $event[$eventId]['summary'],
+          ),
+        );
+
+        $page['#attached']['html_head'][] = [$ogDescription, 'ogDescription'];
+      }
+
+      $ogUrl = array(
+        '#tag' => 'meta',
+        '#attributes' => array(
+          'property' => 'og:url',
+          'name' => 'canonical_url',
+          'content' => \Drupal::request()->getSchemeAndHttpHost() . \Drupal::request()->getRequestUri(),
+        ),
+      );
+
+      $page['#attached']['html_head'][] = [$ogUrl, 'ogUrl'];
+
+      if (!empty($event[$eventId][EVENT_IMAGE])) {
+        // Fetch the image from database.
+        $imageUri = CRM_Core_DAO::singleValueQuery("SELECT uri FROM civicrm_file WHERE id = %1", [1 => [$event[$eventId][EVENT_IMAGE], 'Integer']]);
+        $ogImage = array(
+          '#tag' => 'meta',
+          '#attributes' => array(
+            'property' => 'og:image',
+            'name' => 'image',
+            'content' => \Drupal::request()->getSchemeAndHttpHost() . '/sites/default/files/civicrm/custom/' . $imageUri,
+          ),
+        );
+
+        $page['#attached']['html_head'][] = [$ogImage, 'ogImage'];
+      }
+
+      $ogType = array(
+        '#tag' => 'meta',
+        '#attributes' => array(
+          'property' => 'og:type',
+          'name' => 'type',
+          'content' => 'article',
+        ),
+      );
+
+      $page['#attached']['html_head'][] = [$ogType, 'ogType'];
+    }
+}
+
+function autism_jma_metatags_page_attachments_alter(array &$attachments) {
+  $uri = \Drupal\Core\Url::fromRoute('<current>');
+  $current_uri = $uri->getInternalPath();
+  $paths = [
+    "civicrm/event/register",
+    "civicrm/event/info",
+  ];
+  if (strpos($current_uri, 'civicrm') !== false && in_array($current_uri, $paths)) {
+    $invalidMetas = [
+      'title',
+      'description',
+    ];
+    foreach ($attachments['#attached']['html_head'] as $key => $attachment) {
+      if (in_array($attachment[1], $invalidMetas)) {
+        unset($attachments['#attached']['html_head'][$key]);
+      }
+    }
+  }
+}

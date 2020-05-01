@@ -1,4 +1,4 @@
-jma_customizations:
+autism_jma_views:
   version: 1.0
   js:
     js/custom-gmap.js: {}
