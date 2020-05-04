@@ -87,7 +87,7 @@ function jma_customizations_preprocess_views_view_field(&$variables) {
       $phones = \civicrm_api3('Phone', 'get', ['contact_id' => $view->args[0], 'options' => ['sort' => 'is_primary desc'], 'sequential' => 1]);
       if (!empty($addresses['values'])) {
         foreach ($addresses['values'] as $key => $details) {
-          $content .= '</span></div><div class="views-field views-field-address-details"><div class="left column" style="float:left; margin-right:20px; min-height:4em; min-width: 110px;">';
+          $content .= '</span></div><div class="views-field views-field-address-details"><div class="left column" style="float:left; margin-right:20px; min-height:5em; min-width: 110px;">';
           if ($key === 0) {
             $content .= 'Primary Location';
           }
