@@ -19,7 +19,7 @@ function jma_customizations_css_alter(&$css, \Drupal\Core\Asset\AttachedAssetsIn
         "civicrm/contribute/transact",
         "civicrm/event/register",
         "civicrm/event/info",
-	"civicrm-event",
+        "civicrm-event",
         "civicrm/profile/view",
         "civicrm/profile/edit",
         "civicrm/profile/create",
@@ -37,6 +37,72 @@ function jma_customizations_css_alter(&$css, \Drupal\Core\Asset\AttachedAssetsIn
         unset($css['themes/custom/de_theme/dist/css/de_theme.css']);
         unset($css['modules/contrib/adminimal_admin_toolbar/css/adminimal_admin_toolbar.css']);
     }
+}
+
+function jma_customizations_preprocess_views_view_field(&$variables) {
+  $view = $variables['view'];
+  $field = $variables['field'];
+  if ($view->storage->id() == 'service_listing') {
+    if ($field->field == 'contact_sub_type') {
+      $title = $variables['output'];
+      if (!empty($view->args[0])) {
+        $contactDetails = \civicrm_api3('Contact', 'get', ['id' => $view->args[0], 'return' => ['custom_897', 'custom_896']]);
+        $modulePath = \Drupal::moduleHandler()->getModule('jma_customizations')->getPath();
+        if (!empty($contactDetails['values'])) {
+          if (!empty($contactDetails['values'][$contactDetails['id']]['custom_897'])) {
+            $servicesProvided = $contactDetails['values'][$contactDetails['id']]['custom_897'];
+            if (in_array(3, $servicesProvided)) {
+              $title .= ' <img src="'. file_create_url($modulePath . '/img/icon_local_travel_24px.png') . '" title="Travels to nearby areas">';
+            }
+            if (in_array(4, $servicesProvided)) {
+              $title .= ' <img src="'. file_create_url($modulePath . '/img/icon_remote_travel_24px.png') . '" title="Travels to remote areas">';
+            }
+          }
+          if (isset($contactDetails['values'][$contactDetails['id']]['custom_896'])) {
+            if (!empty($contactDetails['values'][$contactDetails['id']]['custom_896'])) {
+              $title .= ' <img src="'. file_create_url($modulePath . '/img/icon_accepting_24px.png') . '" title="Accepting new clients">';
+            }
+            else {
+              $title .= ' <img src="'. file_create_url($modulePath . '/img/icon_not_accepting_24px.png') . '" title="Not accepting new clients">';
+            }
+          }
+        }
+      }
+
+      $modulePath = \Drupal::moduleHandler()->getModule('jma_customizations')->getPath();
+      $variables['output'] = \Drupal\Core\Render\Markup::create($title);
+    }
+    if ($field->field == 'custom_911' || $field->field === 'custom_895') {
+      $content = $variables['output'];
+      if (!empty($content)) {
+        $modulePath = \Drupal::moduleHandler()->getModule('jma_customizations')->getPath();
+        $content .= ' <img src="'. file_create_url($modulePath . '/img/icon_verified_24px.svg') . '" title="Verified provider">';
+        $variables['output'] = \Drupal\Core\Render\Markup::create($content);
+      }
+    }
+    if ($field->field == 'custom_899') {
+      $content = $variables['output'];
+      $stateProvinceAbbreviations = \civicrm_api3('Address', 'getoptions', ['field' => 'state_province_id', 'context' => 'abbreviate'])['values'];
+      $addresses = \civicrm_api3('Address', 'get', ['contact_id' => $view->args[0], 'options' => ['sort' => 'is_primary desc'], 'sequential' => 1]);
+      $phones = \civicrm_api3('Phone', 'get', ['contact_id' => $view->args[0], 'options' => ['sort' => 'is_primary desc'], 'sequential' => 1]);
+      if (!empty($addresses['values'])) {
+        foreach ($addresses['values'] as $key => $details) {
+          $content .= '</span></div><div class="views-field views-field-address-details"><div class="left column" style="float:left; margin-right:20px; min-height:4em; min-width: 110px;">';
+          if ($key === 0) {
+            $content .= 'Primary Location';
+          }
+          else {
+            $content .= 'Location ' . $key;
+          }
+          $content .= '</div><div class="right column"><a href="tel:' . $phones['values'][$key]['phone'] . '">' . $phones['values'][$key]['phone'] . '</a>';
+          $content .= '<br>' . $details['street_address'] . '<br>' . $details['city'] . ', ' . $stateProvinceAbbreviations[$details['state_province_id']];
+          $content .= '<br>' . $details['postal_code'];
+          $content .= '</div></div>';
+        }
+      }
+      $variables['output'] = \Drupal\Core\Render\Markup::create($content);
+    }
+  }
 }
 
 function jma_customizations_preprocess_field(&$variables) {
