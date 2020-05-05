@@ -65,16 +65,3 @@ html:lang(fr) .civicrm-entity--view-mode-search-teaser.civicrm-entity--type-civi
 .view-content a {
  color: #006ba6 !important;
 }
-
-.field--name-organization-name a {
-       cursor: pointer;
-}
-
-.views-field-display-name h2::after {
-    content: "";
-    display: block;
-    width: 80px;
-    border-bottom: 2px solid #abad00;
-    position: relative;
-    top: 10px;
-}

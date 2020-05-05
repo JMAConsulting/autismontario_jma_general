@@ -1,7 +1,7 @@
 <?php
 define('EVENT_IMAGE', 'custom_833');
 
-require_once jma_customisations.secrets.inc
+require_once 'jma_customizations.secrets.inc';
 
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\views\Plugin\views\cache\CachePluginBase;
