@@ -22,6 +22,10 @@
   letter-spacing: 0.5px;
 }
 
+html:lang(fr) .node--view-mode-teaser.node--type-learning-resource h2::after {
+  content: "Ressources d’apprentissage";
+}
+
 .views-field, .field__item {
   margin-top: 15px;
 }

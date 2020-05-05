@@ -5,3 +5,8 @@ jma_customizations:
   css:
     theme:
       css/style.css: {}
+
+search_facet:
+  version: 1.0
+  js:
+    js/search-facet.js: {}
