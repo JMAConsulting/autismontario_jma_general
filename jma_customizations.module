@@ -72,11 +72,6 @@ function jma_customizations_preprocess_field(&$variables) {
   }
 }
 
-function jma_customizations_preprocess(&$variables) {
-  if (isset($variables['entity_type']) && $variables['entity_type'] === 'civicrm_contact') {
-  }
-}
-
 function jma_customizations_views_query_alter(ViewExecutable $view, QueryPluginBase $query)
 {
     if ($view
@@ -214,8 +209,12 @@ function jma_customizations_page_attachments_alter(array &$attachments) {
 
 function jma_customizations_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
   if ($form_id === "views_exposed_form" && $form['#id'] == "views-exposed-form-events-page-1") {
+    $anyText = '- Any - ';
+    if (\Drupal::languageManager()->getCurrentLanguage()->getId() == 'fr') {
+      $anyText = '- Tous -';
+    }
     $options = [
-      'All' => '- Any -',
+      'All' => $anyText,
     ];
     $eventTypes = CRM_Core_DAO::executeQuery("SELECT v.value, v.label AS label, v.name AS name
       FROM civicrm_event e
@@ -259,6 +258,7 @@ function jma_customizations_views_pre_render(ViewExecutable &$view) {
   }
   if ($view->id() == 'search_solr_' || $view->id() == 'service_listing') {
     $view->element['#attached']['library'][] = 'jma_customizations/jma_customizations';
+    $view->element['#attached']['library'][] = 'jma_customizations/search_facet';
   }
 }
 
