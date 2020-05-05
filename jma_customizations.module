@@ -1,6 +1,8 @@
 <?php
 define('EVENT_IMAGE', 'custom_833');
 
+require_once jma_customisations.secrets.inc
+
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\views\Plugin\views\cache\CachePluginBase;
 use Drupal\views\Plugin\views\query\QueryPluginBase;
@@ -42,12 +44,15 @@ function jma_customizations_css_alter(&$css, \Drupal\Core\Asset\AttachedAssetsIn
 function jma_customizations_preprocess_views_view_field(&$variables) {
   $view = $variables['view'];
   $field = $variables['field'];
+  $modulePath = \Drupal::moduleHandler()->getModule('jma_customizations')->getPath();
   if ($view->storage->id() == 'service_listing') {
+    if ($field->field == 'display_name') {
+      $variables['output'] = \Drupal\Core\Render\Markup::create(str_replace('Self-employed ', '', $variables['output']));
+    }
     if ($field->field == 'contact_sub_type') {
       $title = $variables['output'];
       if (!empty($view->args[0])) {
-        $contactDetails = \civicrm_api3('Contact', 'get', ['id' => $view->args[0], 'return' => ['custom_897', 'custom_896']]);
-        $modulePath = \Drupal::moduleHandler()->getModule('jma_customizations')->getPath();
+        $contactDetails = \civicrm_api3('Contact', 'get', ['id' => $view->args[0], 'return' => ['custom_897', 'custom_896', 'custom_911', 'custom_895']]);
         if (!empty($contactDetails['values'])) {
           if (!empty($contactDetails['values'][$contactDetails['id']]['custom_897'])) {
             $servicesProvided = $contactDetails['values'][$contactDetails['id']]['custom_897'];
@@ -66,19 +71,35 @@ function jma_customizations_preprocess_views_view_field(&$variables) {
               $title .= ' <img src="'. file_create_url($modulePath . '/img/icon_not_accepting_24px.png') . '" title="Not accepting new clients">';
             }
           }
+          if ((!empty($contactDetails['values'][$contactDetails['id']]['custom_911']) && !in_array('None', $contactDetails['values'][$contactDetails['id']]['custom_911'])) || 
+            !empty($contactDetails['values'][$contactDetails['id']]['custom_895'])) {
+            $title .= ' <img src="'. file_create_url($modulePath . '/img/icon_verified_24px.svg') . '" title="Verified provider">';
+          }
         }
       }
-
-      $modulePath = \Drupal::moduleHandler()->getModule('jma_customizations')->getPath();
       $variables['output'] = \Drupal\Core\Render\Markup::create($title);
     }
     if ($field->field == 'custom_911' || $field->field === 'custom_895') {
-      $content = $variables['output'];
-      if (!empty($content)) {
-        $modulePath = \Drupal::moduleHandler()->getModule('jma_customizations')->getPath();
-        $content .= ' <img src="'. file_create_url($modulePath . '/img/icon_verified_24px.svg') . '" title="Verified provider">';
-        $variables['output'] = \Drupal\Core\Render\Markup::create($content);
+      if (!empty($variables['output']) && strpos($variables['output'], 'None of the above') === FALSE) {
+        $parts = explode(',', $variables['output']);
+        foreach ($parts as &$p) {
+          $p = ' <img src="'. file_create_url($modulePath . '/img/icon_verified_16px.svg') . '" title="Verified provider"> ' . $p;
+        }
+        $variables['output'] = implode(',', $parts);
       }
+      if ($field->field === 'custom_895') {
+        $serviceProviderEventses = \CRM_Core_DAO::executeQuery("SELECT a.id as `id`, a.camp_session_name_858 as `Camp_Session_Name`, a.from_859 as `From`, a.to_860 as `To`, a.entity_id as `entity_id`
+          FROM civicrm_value_service_listi_72 a
+          WHERE (`a`.`entity_id` = %1)", [1 => [$view->args[0], 'Positive']])->fetchAll();
+        if (!empty($serviceProviderEventses)) {
+          $variables['output'] .= '</span></div><div class="views-field views-field-event-camp"><h4>Camp Sessions</h4>';
+          foreach ($serviceProviderEventses as $event) {
+            $variables['output'] .= '<div class="views-field">' . $event['Camp_Session_Name'] . '<br>' . getCampDates($event['From'], $event['To']) . '</div>';
+          }
+          $variables['output'] .= '</div>';
+        }
+      }
+      $variables['output'] = \Drupal\Core\Render\Markup::create($variables['output']);
     }
     if ($field->field == 'custom_899') {
       $content = $variables['output'];
@@ -87,20 +108,48 @@ function jma_customizations_preprocess_views_view_field(&$variables) {
       $phones = \civicrm_api3('Phone', 'get', ['contact_id' => $view->args[0], 'options' => ['sort' => 'is_primary desc'], 'sequential' => 1]);
       if (!empty($addresses['values'])) {
         foreach ($addresses['values'] as $key => $details) {
-          $content .= '</span></div><div class="views-field views-field-address-details"><div class="left column" style="float:left; margin-right:20px; min-height:5em; min-width: 110px;">';
+          if ($key === 0) {
+            $content .= '</span></div><div id="other-languages"></div>';
+          }
+          $content .= '<div class="views-field views-field-address-details"><div class="left column" style="float:left; margin-right:20px; min-width: 210px;">';
           if ($key === 0) {
             $content .= 'Primary Location';
           }
           else {
             $content .= 'Location ' . $key;
           }
-          $content .= '</div><div class="right column"><a href="tel:' . $phones['values'][$key]['phone'] . '">' . $phones['values'][$key]['phone'] . '</a>';
+          if (!empty($details['geo_code_1']) && !empty($details['geo_code_2'])) {
+            $html = '<div class="geolocation-map-wrapper" id="map-5eaf8e2e7b141" data-map-type="google_maps">
+                <div class="geolocation-map-controls">
+                      </div>
+
+                <div class="geolocation-map-container js-show" style="height: 100px; width: 100%; position: relative; overflow: hidden;"><div style="height: 100%; width: 100%; position: absolute; top: 0px; left: 0px; background-color: rgb(229, 227, 223);"><div class="gm-style" style="position: absolute; z-index: 0; left: 0px; top: 0px; height: 100%; width: 100%; padding: 0px; border-width: 0px; margin: 0px;"><div tabindex="0" style="position: absolute; z-index: 0; left: 0px; top: 0px; height: 100%; width: 100%; padding: 0px; border-width: 0px; margin: 0px; cursor: url(&quot;https://maps.gstatic.com/mapfiles/openhand_8_8.cur&quot;), default; touch-action: pan-x pan-y;"><div style="z-index: 1; position: absolute; left: 50%; top: 50%; width: 100%; transform: translate(0px, 0px);"><div style="position: absolute; left: 0px; top: 0px; z-index: 100; width: 100%;"><div style="position: absolute; left: 0px; top: 0px; z-index: 0;"><div style="position: absolute; z-index: 992; transform: matrix(1, 0, 0, 1, -144, -112);"><div style="position: absolute; left: 0px; top: 0px; width: 256px; height: 256px;"><div style="width: 256px; height: 256px;"></div></div><div style="position: absolute; left: -256px; top: 0px; width: 256px; height: 256px;"><div style="width: 256px; height: 256px;"></div></div><div style="position: absolute; left: 256px; top: 0px; width: 256px; height: 256px;"><div style="width: 256px; height: 256px;"></div></div></div></div></div><div style="position: absolute; left: 0px; top: 0px; z-index: 101; width: 100%;"></div><div style="position: absolute; left: 0px; top: 0px; z-index: 102; width: 100%;"></div><div style="position: absolute; left: 0px; top: 0px; z-index: 103; width: 100%;"><div style="position: absolute; left: 0px; top: 0px; z-index: -1;"><div style="position: absolute; z-index: 992; transform: matrix(1, 0, 0, 1, -144, -112);"><div style="width: 256px; height: 256px; overflow: hidden; position: absolute; left: 0px; top: 0px;"></div><div style="width: 256px; height: 256px; overflow: hidden; position: absolute; left: -256px; top: 0px;"></div><div style="width: 256px; height: 256px; overflow: hidden; position: absolute; left: 256px; top: 0px;"></div></div></div><div style="width: 27px; height: 43px; overflow: hidden; position: absolute; left: -14px; top: -43px; z-index: 0;"><img alt="" src="https://maps.gstatic.com/mapfiles/api-3/images/spotlight-poi2_hdpi.png" draggable="false" style="position: absolute; left: 0px; top: 0px; width: 27px; height: 43px; user-select: none; border: 0px; padding: 0px; margin: 0px; max-width: none;"></div></div><div style="position: absolute; left: 0px; top: 0px; z-index: 0;"><div style="position: absolute; z-index: 992; transform: matrix(1, 0, 0, 1, -144, -112);"><div style="position: absolute; left: 0px; top: 0px; width: 256px; height: 256px; transition: opacity 200ms linear 0s;"><img draggable="false" alt="" role="presentation" src="https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i8!2i71!3i93!4i256!2m3!1e0!2sm!3i512225897!3m12!2sen-US!3sUS!5e18!12m4!1e68!2m2!1sset!2sRoadmap!12m3!1e37!2m1!1ssmartmaps!4e0!5m1!5f2&amp;key=' . GOOGLE_API_KEY . '&amp;token=99229" style="width: 256px; height: 256px; user-select: none; border: 0px; padding: 0px; margin: 0px; max-width: none;"></div><div style="position: absolute; left: -256px; top: 0px; width: 256px; height: 256px; transition: opacity 200ms linear 0s;"><img draggable="false" alt="" role="presentation" src="https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i8!2i70!3i93!4i256!2m3!1e0!2sm!3i512225897!3m12!2sen-US!3sUS!5e18!12m4!1e68!2m2!1sset!2sRoadmap!12m3!1e37!2m1!1ssmartmaps!4e0!5m1!5f2&amp;key=' . GOOGLE_API_KEY . '&amp;token=44922" style="width: 256px; height: 256px; user-select: none; border: 0px; padding: 0px; margin: 0px; max-width: none;"></div><div style="position: absolute; left: 256px; top: 0px; width: 256px; height: 256px; transition: opacity 200ms linear 0s;"><img draggable="false" alt="" role="presentation" src="https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i8!2i72!3i93!4i256!2m3!1e0!2sm!3i512225788!3m12!2sen-US!3sUS!5e18!12m4!1e68!2m2!1sset!2sRoadmap!12m3!1e37!2m1!1ssmartmaps!4e0!5m1!5f2&amp;key=' . GOOGLE_API_KEY . '&amp;token=19839" style="width: 256px; height: 256px; user-select: none; border: 0px; padding: 0px; margin: 0px; max-width: none;"></div></div></div></div><div class="gm-style-pbc" style="z-index: 2; position: absolute; height: 100%; width: 100%; padding: 0px; border-width: 0px; margin: 0px; left: 0px; top: 0px; opacity: 0;"><p class="gm-style-pbt"></p></div><div style="z-index: 3; position: absolute; height: 100%; width: 100%; padding: 0px; border-width: 0px; margin: 0px; left: 0px; top: 0px; touch-action: pan-x pan-y;"><div style="z-index: 4; position: absolute; left: 50%; top: 50%; width: 100%; transform: translate(0px, 0px);"><div style="position: absolute; left: 0px; top: 0px; z-index: 104; width: 100%;"></div><div style="position: absolute; left: 0px; top: 0px; z-index: 105; width: 100%;"></div><div style="position: absolute; left: 0px; top: 0px; z-index: 106; width: 100%;"><div style="width: 27px; height: 43px; overflow: hidden; position: absolute; opacity: 0; left: -14px; top: -43px; z-index: 0;"><img alt="" src="https://maps.gstatic.com/mapfiles/api-3/images/spotlight-poi2_hdpi.png" draggable="false" usemap="#gmimap83" style="position: absolute; left: 0px; top: 0px; width: 27px; height: 43px; user-select: none; border: 0px; padding: 0px; margin: 0px; max-width: none;"><map name="gmimap83" id="gmimap83"><area log="miw" coords="13.5,0,4,3.75,0,13.5,13.5,43,27,13.5,23,3.75" shape="poly" title="George Brown College" style="cursor: pointer; touch-action: none;"></map></div></div><div style="position: absolute; left: 0px; top: 0px; z-index: 107; width: 100%;"></div></div></div></div><iframe aria-hidden="true" frameborder="0" tabindex="-1" style="z-index: -1; position: absolute; width: 100%; height: 100%; top: 0px; left: 0px; border: none;"></iframe><div style="margin-left: 5px; margin-right: 5px; z-index: 1000000; position: absolute; left: 0px; bottom: 0px;"><a target="_blank" rel="noopener" href="https://maps.google.com/maps?ll=43.643963,-79.365475&amp;z=8&amp;t=m&amp;hl=en-US&amp;gl=US&amp;mapclient=apiv3" title="Open this area in Google Maps (opens a new window)" style="position: static; overflow: visible; float: none; display: inline;"><div style="width: 66px; height: 26px; cursor: pointer;"><img alt="" src="https://maps.gstatic.com/mapfiles/api-3/images/google4_hdpi.png" draggable="false" style="position: absolute; left: 0px; top: 0px; width: 66px; height: 26px; user-select: none; border: 0px; padding: 0px; margin: 0px;"></div></a></div><div style="background-color: white; padding: 15px 21px; border: 1px solid rgb(171, 171, 171); font-family: Roboto, Arial, sans-serif; color: rgb(34, 34, 34); box-sizing: border-box; box-shadow: rgba(0, 0, 0, 0.2) 0px 4px 16px; z-index: 10000002; display: none; width: 300px; height: 91px; position: absolute; left: 10px; top: 5px;"><div style="padding: 0px 0px 10px; font-size: 16px; box-sizing: border-box;">Map Data</div><div style="font-size: 13px;">Map data ©2020 Google</div><button draggable="false" title="Close" aria-label="Close" type="button" class="gm-ui-hover-effect" style="background: none; display: block; border: 0px; margin: 0px; padding: 0px; position: absolute; cursor: pointer; user-select: none; top: 0px; right: 0px; width: 37px; height: 37px;"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224px%22%20height%3D%2224px%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22%23000000%22%3E%0A%20%20%20%20%3Cpath%20d%3D%22M19%206.41L17.59%205%2012%2010.59%206.41%205%205%206.41%2010.59%2012%205%2017.59%206.41%2019%2012%2013.41%2017.59%2019%2019%2017.59%2013.41%2012z%22%2F%3E%0A%20%20%20%20%3Cpath%20d%3D%22M0%200h24v24H0z%22%20fill%3D%22none%22%2F%3E%0A%3C%2Fsvg%3E%0A" style="pointer-events: none; display: block; width: 13px; height: 13px; margin: 12px;"></button></div><div class="gmnoprint" style="z-index: 1000001; position: absolute; right: 170px; bottom: 0px; width: 122px;"><div draggable="false" class="gm-style-cc" style="user-select: none; height: 14px; line-height: 14px;"><div style="opacity: 0.7; width: 100%; height: 100%; position: absolute;"><div style="width: 1px;"></div><div style="background-color: rgb(245, 245, 245); width: auto; height: 100%; margin-left: 1px;"></div></div><div style="position: relative; padding-right: 6px; padding-left: 6px; box-sizing: border-box; font-family: Roboto, Arial, sans-serif; font-size: 10px; color: rgb(68, 68, 68); white-space: nowrap; direction: ltr; text-align: right; vertical-align: middle; display: inline-block;"><a style="text-decoration: none; cursor: pointer; display: none;">Map Data</a><span>Map data ©2020 Google</span></div></div></div><div class="gmnoscreen" style="position: absolute; right: 0px; bottom: 0px;"><div style="font-family: Roboto, Arial, sans-serif; font-size: 11px; color: rgb(68, 68, 68); direction: ltr; text-align: right; background-color: rgb(245, 245, 245);">Map data ©2020 Google</div></div><div class="gmnoprint gm-style-cc" draggable="false" style="z-index: 1000001; user-select: none; height: 14px; line-height: 14px; position: absolute; right: 98px; bottom: 0px;"><div style="opacity: 0.7; width: 100%; height: 100%; position: absolute;"><div style="width: 1px;"></div><div style="background-color: rgb(245, 245, 245); width: auto; height: 100%; margin-left: 1px;"></div></div><div style="position: relative; padding-right: 6px; padding-left: 6px; box-sizing: border-box; font-family: Roboto, Arial, sans-serif; font-size: 10px; color: rgb(68, 68, 68); white-space: nowrap; direction: ltr; text-align: right; vertical-align: middle; display: inline-block;"><a href="https://www.google.com/intl/en-US_US/help/terms_maps.html" target="_blank" rel="noopener" style="text-decoration: none; cursor: pointer; color: rgb(68, 68, 68);">Terms of Use</a></div></div><button draggable="false" title="Toggle fullscreen view" aria-label="Toggle fullscreen view" type="button" class="gm-control-active gm-fullscreen-control" style="background: none rgb(255, 255, 255); border: 0px; margin: 10px; padding: 0px; position: absolute; cursor: pointer; user-select: none; border-radius: 2px; height: 40px; width: 40px; box-shadow: rgba(0, 0, 0, 0.3) 0px 1px 4px -1px; overflow: hidden; display: none; top: 0px; right: 0px;"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2218%22%20height%3D%2218%22%20viewBox%3D%220%20018%2018%22%3E%0A%20%20%3Cpath%20fill%3D%22%23666%22%20d%3D%22M0%2C0v2v4h2V2h4V0H2H0z%20M16%2C0h-4v2h4v4h2V2V0H16z%20M16%2C16h-4v2h4h2v-2v-4h-2V16z%20M2%2C12H0v4v2h2h4v-2H2V12z%22%2F%3E%0A%3C%2Fsvg%3E%0A" style="height: 18px; width: 18px;"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2218%22%20height%3D%2218%22%20viewBox%3D%220%200%2018%2018%22%3E%0A%20%20%3Cpath%20fill%3D%22%23333%22%20d%3D%22M0%2C0v2v4h2V2h4V0H2H0z%20M16%2C0h-4v2h4v4h2V2V0H16z%20M16%2C16h-4v2h4h2v-2v-4h-2V16z%20M2%2C12H0v4v2h2h4v-2H2V12z%22%2F%3E%0A%3C%2Fsvg%3E%0A" style="height: 18px; width: 18px;"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2218%22%20height%3D%2218%22%20viewBox%3D%220%200%2018%2018%22%3E%0A%20%20%3Cpath%20fill%3D%22%23111%22%20d%3D%22M0%2C0v2v4h2V2h4V0H2H0z%20M16%2C0h-4v2h4v4h2V2V0H16z%20M16%2C16h-4v2h4h2v-2v-4h-2V16z%20M2%2C12H0v4v2h2h4v-2H2V12z%22%2F%3E%0A%3C%2Fsvg%3E%0A" style="height: 18px; width: 18px;"></button><div draggable="false" class="gm-style-cc" style="user-select: none; height: 14px; line-height: 14px; position: absolute; right: 0px; bottom: 0px;"><div style="opacity: 0.7; width: 100%; height: 100%; position: absolute;"><div style="width: 1px;"></div><div style="background-color: rgb(245, 245, 245); width: auto; height: 100%; margin-left: 1px;"></div></div><div style="position: relative; padding-right: 6px; padding-left: 6px; box-sizing: border-box; font-family: Roboto, Arial, sans-serif; font-size: 10px; color: rgb(68, 68, 68); white-space: nowrap; direction: ltr; text-align: right; vertical-align: middle; display: inline-block;"><a target="_blank" rel="noopener" title="Report errors in the road map or imagery to Google" href="https://www.google.com/maps/@%lat%,%long%,8z/data=!10m1!1e1!12b1?source=apiv3&amp;rapsrc=apiv3" style="font-family: Roboto, Arial, sans-serif; font-size: 10px; color: rgb(68, 68, 68); text-decoration: none; position: relative;">Report a map error</a></div></div></div></div></div>
+
+
+            <div class="geolocation-location js-hide" id="5eaf8e2e84a68" data-lat="%lat%" data-lng="%long%" data-set-marker="true" typeof="Place" style="display: none;">
+              <span property="geo" typeof="GeoCoordinates">
+                <meta property="latitude" content="%lat%">
+                <meta property="longitude" content="%long%">
+              </span>
+
+                  <h2 class="location-title" property="name">%street_address%</h2>
+
+              </div>
+             </div>';
+            $html = str_replace('%lat%', $details['geo_code_1'], $html);
+            $html = str_replace('%long%', $details['geo_code_2'], $html);
+            $html = str_replace('%street_address%', '<br>' . $details['street_address'] . '<br>' . $details['city'] . ', ' . $stateProvinceAbbreviations[$details['state_province_id']], $html);
+            $content .= "<br /><br />" . $html;
+          }
+ 
+
+          $content .= '</div><div class="right column" style="min-height: 10em"><a href="tel:' . $phones['values'][$key]['phone'] . '">' . $phones['values'][$key]['phone'] . '</a>';
           $content .= '<br>' . $details['street_address'] . '<br>' . $details['city'] . ', ' . $stateProvinceAbbreviations[$details['state_province_id']];
           $content .= '<br>' . $details['postal_code'];
           $content .= '</div></div>';
         }
       }
-      $variables['output'] = \Drupal\Core\Render\Markup::create($content);
+      $variables['output'] = \Drupal\Core\Render\Markup::create(substr($content, 0, -6));
     }
   }
 }
@@ -116,6 +165,7 @@ function jma_customizations_preprocess_field(&$variables) {
     else {
       $size = '24px';
     }
+    $variables['items'][0]['content']['#value'] = str_replace('Self-employed ', '', $variables['items'][0]['content']['#value']);
     if (!empty($contactDetails['values'])) {
       if (!empty($contactDetails['values'][$contactDetails['id']]['custom_897'])) {
         $servicesProvided = $contactDetails['values'][$contactDetails['id']]['custom_897'];
@@ -134,33 +184,33 @@ function jma_customizations_preprocess_field(&$variables) {
           $variables['items'][0]['content']['#value'] .= ' <img src="'. file_create_url($modulePath . '/img/icon_not_accepting_' . $size . '.png') . '" title="Not accepting new clients">';
         }
       }
+      if ($size === '16px') {
+        $variables['items'][0]['content']['#value'] .= ' <img src="'. file_create_url($modulePath . '/img/icon_verified_16px.svg') . '" title="Verified provider">';
+      }
     }
   }
 }
 
-function jma_customizations_views_query_alter(ViewExecutable $view, QueryPluginBase $query)
-{
-    if ($view
-            ->id() == 'events') {
-
-        // Traverse through the 'where' part of the query.
-        foreach ($query->where as &$condition_group) {
-            foreach ($condition_group['conditions'] as &$condition) {
-                // If this is the part of the query filtering on title, chang the
-                // condition to filter on node ID.
-                if ($condition['field'] == 'civicrm_event.title') {
-                    $condition['field'] = 'civicrm_event.title_en_US';
-                }
-                if ($condition['field'] == 'civicrm_event.description') {
-                    $condition['field'] = 'civicrm_event.description_en_US';
-                }
-                if ($condition['field'] == 'civicrm_value_event_chapter_28_civicrm_event.chapter_325') {
-                  $condition['value'][0] = "([[:cntrl:]]|^)" . $condition['value'][0] . "([[:cntrl:]]|$)";
-                  $condition['operator'] = 'REGEXP';
-                }
-            }
+function jma_customizations_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
+  if ($view->id() == 'events') {
+    // Traverse through the 'where' part of the query.
+    foreach ($query->where as &$condition_group) {
+      foreach ($condition_group['conditions'] as &$condition) {
+        // If this is the part of the query filtering on title, chang the
+        // condition to filter on node ID.
+        if ($condition['field'] == 'civicrm_event.title') {
+          $condition['field'] = 'civicrm_event.title_en_US';
         }
+        if ($condition['field'] == 'civicrm_event.description') {
+          $condition['field'] = 'civicrm_event.description_en_US';
+        }
+        if ($condition['field'] == 'civicrm_value_event_chapter_28_civicrm_event.chapter_325') {
+          $condition['value'][0] = "([[:cntrl:]]|^)" . $condition['value'][0] . "([[:cntrl:]]|$)";
+          $condition['operator'] = 'REGEXP';
+        }
+      }
     }
+  }
 }
 
 function jma_customizations_module_implements_alter(&$implementations, $hook) {
@@ -384,4 +434,27 @@ function jma_customizations_login_user_login($account) {
       $response->send();
     }
   }
+}
+
+function jma_customizations_theme($existing, $type, $theme, $path) {
+  return array(
+      'views_view_unformatted--service_listing--page_1' => [
+      'render element' => 'elements',
+//      'template' => 'views_view_unformatted--service_listing--page_1',
+      'base hook' => 'view',
+    ],
+  );
+
+}
+
+function getCampDates($from, $to) {
+  $content = 'From: ' . date('l, F j Y', strtotime($from)) . ' To: ' . date('l, F j Y', strtotime($to));
+  if (\Drupal::languageManager()->getCurrentLanguage()->getId() == 'fr') {
+    $english_days = array('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday');
+    $french_days = array('lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche');
+    $english_months = array('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
+    $french_months = array('janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre');
+    $content = str_replace($english_months, $french_months, str_replace($english_days, $french_days, $content));
+  }
+  return $content;
 }

@@ -14,7 +14,8 @@
 
   $('.field--name-organization-name a').on('click', function(e) {
     var parts = $(this).data('quickedit-field-id').split('/');
-    window.open('/service-listing/' + parts[1]);
+    //$(this).attr('href', '/service-listing/' + parts[1]');
+      window.open('/service-listing/' + parts[1]);
   });
 
 })(jQuery, Drupal);
