@@ -65,3 +65,7 @@ html:lang(fr) .civicrm-entity--view-mode-search-teaser.civicrm-entity--type-civi
 .view-content a {
  color: #006ba6 !important;
 }
+
+a:hover {
+  text-decoration: underline;
+}

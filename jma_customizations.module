@@ -113,10 +113,20 @@ function jma_customizations_preprocess_views_view_field(&$variables) {
           }
           $content .= '<div class="views-field views-field-address-details"><div class="left column" style="float:left; margin-right:20px; min-width: 210px;">';
           if ($key === 0) {
-            $content .= 'Primary Location';
+            if (\Drupal::languageManager()->getCurrentLanguage()->getId() == 'fr') {
+              $content .= 'Lieu de travail principal';
+            }
+            else {
+              $content .= 'Primary Work Location';
+            }
           }
           else {
-            $content .= 'Location ' . $key;
+            if (\Drupal::languageManager()->getCurrentLanguage()->getId() == 'fr') {
+              $content .= 'Lieu de travail complémentaire ' . $key;
+            }
+            else {
+              $content .= 'Supplementary Work Location ' . $key;
+            }
           }
           if (!empty($details['geo_code_1']) && !empty($details['geo_code_2'])) {
             $html = '<div class="geolocation-map-wrapper" id="map-5eaf8e2e7b141" data-map-type="google_maps">
@@ -299,8 +309,22 @@ function jma_customizations_page_attachments(array &$page) {
         ),
       );
 
-      $page['#attached']['html_head'][] = [$ogType, 'ogType'];
+     $page['#attached']['html_head'][] = [$ogType, 'ogType'];
+  }
+  if (strpos($current_uri, 'service-listing') !== FALSE && strpos($current_uri, 'service-listing-application') === FALSE && strpos($current_uri, 'service-listing-thankyou') === FALSE) {
+    $parts = explode('/', $current_uri);
+    \Drupal::service('civicrm')->initialize();
+    $contactDetails = \civicrm_api3('Contact', 'get', ['id' => $parts[1]]);
+    if (!empty($contactDetails['values'])) {
+      $displayName = $contactDetails['values'][$contactDetails['id']]['display_name'];
+      foreach ($page['#attached']['html_head'] as $key => $tagDetails) {
+        if ($tagDetails[1] === 'title') {
+          $content = str_replace('Self-employed ', '', $displayName) . ' ' . $tagDetails[0]['#attributes']['content'];
+          $page['#attached']['html_head'][$key][0]['#attributes']['content'] = $content;
+        }
+      }
     }
+  }
 }
 
 function jma_customizations_page_attachments_alter(array &$attachments) {
@@ -319,6 +343,20 @@ function jma_customizations_page_attachments_alter(array &$attachments) {
       if (in_array($attachment[1], $invalidMetas)) {
         unset($attachments['#attached']['html_head'][$key]);
       }
+    }
+  }
+}
+
+function jma_customizations_preprocess_html(&$variables) {
+  $variables['service_title'] = FALSE;
+  $uri = \Drupal\Core\Url::fromRoute('<current>');
+  $current_uri = $uri->getInternalPath();
+  if (strpos($current_uri, 'service-listing') !== FALSE && strpos($current_uri, 'service-listing-application') === FALSE && strpos($current_uri, 'service-listing-thankyou') === FALSE) {
+    $parts = explode('/', $current_uri);
+    \Drupal::service('civicrm')->initialize();
+    $contactDetails = \civicrm_api3('Contact', 'get', ['id' => $parts[1]]);
+    if (!empty($contactDetails['values'])) {
+      $variables['service_title'] = str_replace('Self-employed ', '', $contactDetails['values'][$contactDetails['id']]['display_name']) . ' ';
     }
   }
 }
