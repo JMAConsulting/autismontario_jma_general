@@ -176,6 +176,9 @@ function jma_customizations_preprocess_field(&$variables) {
       $size = '24px';
     }
     $variables['items'][0]['content']['#value'] = str_replace('Self-employed ', '', $variables['items'][0]['content']['#value']);
+    if (\Drupal::languageManager()->getCurrentLanguage()->getId() == 'fr') {
+      $variables['items'][0]['content']['#value'] = str_replace('/civicrm-contact', '/fr/civicrm-contact', $variables['items'][0]['content']['#value']);
+    }
     if (!empty($contactDetails['values'])) {
       if (!empty($contactDetails['values'][$contactDetails['id']]['custom_897'])) {
         $servicesProvided = $contactDetails['values'][$contactDetails['id']]['custom_897'];
@@ -472,17 +475,6 @@ function jma_customizations_login_user_login($account) {
       $response->send();
     }
   }
-}
-
-function jma_customizations_theme($existing, $type, $theme, $path) {
-  return array(
-      'views_view_unformatted--service_listing--page_1' => [
-      'render element' => 'elements',
-//      'template' => 'views_view_unformatted--service_listing--page_1',
-      'base hook' => 'view',
-    ],
-  );
-
 }
 
 function getCampDates($from, $to) {
