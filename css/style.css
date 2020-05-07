@@ -1,5 +1,5 @@
-.path-map #edit-coordinates, .view-display-id-attachment_1 > .view-header {
-    display: none;
+.path-event-map #edit-coordinates, .view-display-id-attachment_1 > .view-header  {
+  display: none;
 }
 
 .field--name-custom-893 {
@@ -26,11 +26,46 @@ html:lang(fr) .node--view-mode-teaser.node--type-learning-resource h2::after {
   content: "Ressources d’apprentissage";
 }
 
+.civicrm-entity--view-mode-search-teaser.civicrm-entity--type-civicrm-contact h2:after {
+  content: 'Service Listing' !important;
+}
+
+html:lang(fr) .civicrm-entity--view-mode-search-teaser.civicrm-entity--type-civicrm-contact h2:after {
+  content: 'Répertoire des services' !important;
+}
+
 .views-field, .field__item {
   margin-top: 15px;
 }
 
+.views-field-contact-sub-type {
+  text-transform: uppercase;
+  font-size: 20px;
+  color: #707070;
+  font-style: italic;
+}
+
 .node--view-mode-teaser.node--type-learning-resource .field--name-field-linked-videos .field__item {
   margin-bottom: 1em;
-  width: auto;
+}
+
+.field--name-organization-name a {
+  cursor: pointer;
+}
+
+.views-field-display-name h2::after {
+  content: "";
+  display: block;
+  width: 80px;
+  border-bottom: 2px solid #abad00;
+  position: relative;
+  top: 10px;
+}
+
+.view-content a {
+ color: #006ba6 !important;
+}
+
+a:hover {
+  text-decoration: underline;
 }

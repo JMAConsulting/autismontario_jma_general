@@ -6,6 +6,11 @@ jma_customizations:
     theme:
       css/style.css: {}
 
+service_listing:
+  version: 1.0
+  js:
+    js/service-listing.js: {}
+
 search_facet:
   version: 1.0
   js:
