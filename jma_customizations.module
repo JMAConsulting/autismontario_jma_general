@@ -10,7 +10,7 @@ use Drupal\views\Plugin\views\PluginBase;
 use Drupal\views\ViewExecutable;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\views\Views;
-
+use CRM_Aoservicelisting_ExtensionUtil as E;
 
 function jma_customizations_css_alter(&$css, \Drupal\Core\Asset\AttachedAssetsInterface $assets)
 {
@@ -45,6 +45,11 @@ function jma_customizations_preprocess_views_view_field(&$variables) {
   $view = $variables['view'];
   $field = $variables['field'];
   $modulePath = \Drupal::moduleHandler()->getModule('jma_customizations')->getPath();
+  if ($view->storage->id() == 'contact_map') {
+    if ($field->field == 'display_name') {
+      $variables['output'] = \Drupal\Core\Render\Markup::create(str_replace('Self-employed ', '', $variables['output']));
+    }
+  }
   if ($view->storage->id() == 'service_listing') {
     if ($field->field == 'display_name') {
       $variables['output'] = \Drupal\Core\Render\Markup::create(str_replace('Self-employed ', '', $variables['output']));
@@ -57,23 +62,23 @@ function jma_customizations_preprocess_views_view_field(&$variables) {
           if (!empty($contactDetails['values'][$contactDetails['id']]['custom_897'])) {
             $servicesProvided = $contactDetails['values'][$contactDetails['id']]['custom_897'];
             if (in_array(3, $servicesProvided)) {
-              $title .= ' <img src="'. file_create_url($modulePath . '/img/icon_local_travel_24px.png') . '" title="Travels to nearby areas">';
+              $title .= ' <img src="'. file_create_url($modulePath . '/img/icon_local_travel_24px.png') . '" title="' . E::ts('Travels to nearby areas') . '">';
             }
             if (in_array(4, $servicesProvided)) {
-              $title .= ' <img src="'. file_create_url($modulePath . '/img/icon_remote_travel_24px.png') . '" title="Travels to remote areas">';
+              $title .= ' <img src="'. file_create_url($modulePath . '/img/icon_remote_travel_24px.png') . '" title="' . E::ts('Travels to remote areas') . '">';
             }
           }
           if (isset($contactDetails['values'][$contactDetails['id']]['custom_896'])) {
             if (!empty($contactDetails['values'][$contactDetails['id']]['custom_896'])) {
-              $title .= ' <img src="'. file_create_url($modulePath . '/img/icon_accepting_24px.png') . '" title="Accepting new clients">';
+              $title .= ' <img src="'. file_create_url($modulePath . '/img/icon_accepting_24px.png') . '" title="' . E::ts('Accepting new clients') . '">';
             }
             else {
-              $title .= ' <img src="'. file_create_url($modulePath . '/img/icon_not_accepting_24px.png') . '" title="Not accepting new clients">';
+              $title .= ' <img src="'. file_create_url($modulePath . '/img/icon_not_accepting_24px.png') . '" title="' . E::ts('Not accepting new clients') . '">';
             }
           }
           if ((!empty($contactDetails['values'][$contactDetails['id']]['custom_911']) && !in_array('None', $contactDetails['values'][$contactDetails['id']]['custom_911'])) || 
             !empty($contactDetails['values'][$contactDetails['id']]['custom_895'])) {
-            $title .= ' <img src="'. file_create_url($modulePath . '/img/icon_verified_24px.svg') . '" title="Verified provider">';
+            $title .= ' <img src="'. file_create_url($modulePath . '/img/icon_verified_24px.svg') . '" title="' . E::ts('Verified listing') . '">';
           }
         }
       }
@@ -83,7 +88,7 @@ function jma_customizations_preprocess_views_view_field(&$variables) {
       if (!empty($variables['output']) && strpos($variables['output'], 'None of the above') === FALSE) {
         $parts = explode(',', $variables['output']);
         foreach ($parts as &$p) {
-          $p = ' <img src="'. file_create_url($modulePath . '/img/icon_verified_16px.svg') . '" title="Verified provider"> ' . $p;
+          $p = ' <img src="'. file_create_url($modulePath . '/img/icon_verified_16px.svg') . '" title="' . E::ts('Verified listing') .  '"> ' . $p;
         }
         $variables['output'] = implode(',', $parts);
       }
@@ -183,22 +188,22 @@ function jma_customizations_preprocess_field(&$variables) {
       if (!empty($contactDetails['values'][$contactDetails['id']]['custom_897'])) {
         $servicesProvided = $contactDetails['values'][$contactDetails['id']]['custom_897'];
         if (in_array(3, $servicesProvided)) {
-          $variables['items'][0]['content']['#value'] .= ' <img src="'. file_create_url($modulePath . '/img/icon_local_travel_' . $size . '.png') . '" title="Travels to nearby areas">';
+          $variables['items'][0]['content']['#value'] .= ' <img src="'. file_create_url($modulePath . '/img/icon_local_travel_' . $size . '.png') . '" title="' . E::ts('Travels to nearby areas') . '">';
         }
         if (in_array(4, $servicesProvided)) {
-          $variables['items'][0]['content']['#value'] .= ' <img src="'. file_create_url($modulePath . '/img/icon_remote_travel_' . $size . '.png') . '" title="Travels to remote areas">';
+          $variables['items'][0]['content']['#value'] .= ' <img src="'. file_create_url($modulePath . '/img/icon_remote_travel_' . $size . '.png') . '" title="' . E::ts('Travels to remote areas') . '">';
         }
       }
       if (isset($contactDetails['values'][$contactDetails['id']]['custom_896'])) {
         if (!empty($contactDetails['values'][$contactDetails['id']]['custom_896'])) {
-          $variables['items'][0]['content']['#value'] .= ' <img src="'. file_create_url($modulePath . '/img/icon_accepting_' . $size . '.png') . '" title="Accepting new clients">';
+          $variables['items'][0]['content']['#value'] .= ' <img src="'. file_create_url($modulePath . '/img/icon_accepting_' . $size . '.png') . '" title="' . E::ts('Accepting new clients') . '">';
         }
         else {
-          $variables['items'][0]['content']['#value'] .= ' <img src="'. file_create_url($modulePath . '/img/icon_not_accepting_' . $size . '.png') . '" title="Not accepting new clients">';
+          $variables['items'][0]['content']['#value'] .= ' <img src="'. file_create_url($modulePath . '/img/icon_not_accepting_' . $size . '.png') . '" title="' . E::ts('Not accepting new clients') . '">';
         }
       }
       if ($size === '16px') {
-        $variables['items'][0]['content']['#value'] .= ' <img src="'. file_create_url($modulePath . '/img/icon_verified_16px.svg') . '" title="Verified provider">';
+        $variables['items'][0]['content']['#value'] .= ' <img src="'. file_create_url($modulePath . '/img/icon_verified_16px.svg') . '" title="' . E::ts('Verified listing') . '">';
       }
     }
   }
