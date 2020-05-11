@@ -76,7 +76,7 @@ function jma_customizations_preprocess_views_view_field(&$variables) {
               $title .= ' <img src="'. file_create_url($modulePath . '/img/icon_not_accepting_24px.png') . '" title="' . E::ts('Not accepting new clients') . '">';
             }
           }
-          if ((!empty($contactDetails['values'][$contactDetails['id']]['custom_911']) && !in_array('None', $contactDetails['values'][$contactDetails['id']]['custom_911'])) || 
+          if ((!empty($contactDetails['values'][$contactDetails['id']]['custom_911']) && !in_array('None', $contactDetails['values'][$contactDetails['id']]['custom_911'])) ||
             !empty($contactDetails['values'][$contactDetails['id']]['custom_895'])) {
             $title .= ' <img src="'. file_create_url($modulePath . '/img/icon_verified_24px.svg') . '" title="' . E::ts('Verified listing') . '">';
           }
@@ -154,9 +154,9 @@ function jma_customizations_preprocess_views_view_field(&$variables) {
             $html = str_replace('%lat%', $details['geo_code_1'], $html);
             $html = str_replace('%long%', $details['geo_code_2'], $html);
             $html = str_replace('%street_address%', '<br>' . $details['street_address'] . '<br>' . $details['city'] . ', ' . $stateProvinceAbbreviations[$details['state_province_id']], $html);
+            $html = str_replace('GOOGLE_API_KEY', \Drupal::config('geolocation_google_maps.settings')->get('google_map_api_key'), $html);
             $content .= "<br /><br />" . $html;
           }
- 
 
           $content .= '</div><div class="right column" style="min-height: 10em"><a href="tel:' . $phones['values'][$key]['phone'] . '">' . $phones['values'][$key]['phone'] . '</a>';
           $content .= '<br>' . $details['street_address'] . '<br>' . $details['city'] . ', ' . $stateProvinceAbbreviations[$details['state_province_id']];
