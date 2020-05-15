@@ -496,7 +496,6 @@ function jma_customizations_form_user_form_alter(&$form, \Drupal\Core\Form\FormS
 }
 
 function _jma_redirect_form_submit(array $form, FormStateInterface $form_state){
-  //Add logic for checking is this is first time logged in User
   $response = new Symfony\Component\HttpFoundation\RedirectResponse(\Drupal\Core\URL::fromUserInput('/civicrm/service-listing-application')->toString());
   $response->send();
 }
