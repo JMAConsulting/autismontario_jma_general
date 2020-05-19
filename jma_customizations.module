@@ -114,6 +114,9 @@ function jma_customizations_preprocess_views_view_field(&$variables) {
       $phones = \civicrm_api3('Phone', 'get', ['contact_id' => $view->args[0], 'options' => ['sort' => 'is_primary desc'], 'sequential' => 1]);
       if (!empty($addresses['values'])) {
         foreach ($addresses['values'] as $key => $details) {
+          if ($key === 0) {
+            $content .= '</span></div>';
+          }
           $content .= '<div class="views-field views-field-address-details"><div class="left column" style="float:left; margin-right:20px; min-width: 210px;">';
           if ($key === 0) {
             if (\Drupal::languageManager()->getCurrentLanguage()->getId() == 'fr') {
