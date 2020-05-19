@@ -467,7 +467,7 @@ function jma_customizations_views_pre_execute(ViewExecutable &$view) {
   }
 }
 
-function jma_customizations_login_user_login($account) {
+function jma_customizations_user_login($account) {
   $current_route = \Drupal::routeMatch()->getRouteName();
   $destination = \Drupal::request()->query->get('destination');
   if ($destination && $destination != '/user/login') {
@@ -477,10 +477,27 @@ function jma_customizations_login_user_login($account) {
     $current_user = \Drupal::currentUser();
     $roles = (array) $current_user->getRoles();
     if (in_array('authorized_contact', $roles)) {
-      $response = new RedirectResponse(URL::fromUserInput('/civicrm/service-listing-application')->toString());
+      $response = new Symfony\Component\HttpFoundation\RedirectResponse(\Drupal\Core\URL::fromUserInput('/civicrm/service-listing-application')->toString());
       $response->send();
     }
   }
+}
+
+function jma_customizations_form_user_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
+  $current_user = \Drupal::currentUser();
+  $roles = (array) $current_user->getRoles();
+  if (in_array('authorized_contact', $roles)) {
+    foreach (array_keys($form['actions']) as $action) {
+      if (isset($form['actions'][$action]['#type']) && $form['actions'][$action]['#type'] === 'submit') {
+        $form['actions'][$action]['#submit'][] = '_jma_redirect_form_submit';
+      }
+    }
+  }
+}
+
+function _jma_redirect_form_submit(array $form, FormStateInterface $form_state){
+  $response = new Symfony\Component\HttpFoundation\RedirectResponse(\Drupal\Core\URL::fromUserInput('/civicrm/service-listing-application')->toString());
+  $response->send();
 }
 
 function getCampDates($from, $to) {
