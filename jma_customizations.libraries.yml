@@ -15,3 +15,4 @@ search_facet:
   version: 1.0
   js:
     js/search-facet.js: {}
+    js/google-map.js: {}
