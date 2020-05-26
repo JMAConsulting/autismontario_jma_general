@@ -16,4 +16,17 @@
     }
   });
 
+  $(document).ready(function() {
+    $.each($('[id^=address-map'), function() {
+      var point = new google.maps.LatLng($(this).attr('data-lat'), $(this).attr('data-lng'));
+      var map = new google.maps.Map(document.getElementById($(this).attr('id')), {
+        zoom: 14,
+        fullscreenControl: false,
+        zoomControl: false,
+        center: point
+      });
+      var marker = new google.maps.Marker({position: point, map: map, title: $(this).attr('data-marker-title')});
+    });
+  });
+
 })(jQuery, Drupal);
