@@ -4,6 +4,7 @@ namespace Drupal\jma_customizations\Plugin\views\filter;
 
 use Drupal\views\Plugin\views\display\DisplayPluginBase;
 use Drupal\views\Plugin\views\filter\ManyToOne;
+use Drupal\views\Plugin\views\filter\InOperator;
 use Drupal\views\ViewExecutable;
 use Drupal\views\Views;
 
@@ -14,7 +15,7 @@ use Drupal\views\Views;
  *
  * @ViewsFilter("lang_views_filter")
  */
-class LangViewsFilter extends ManyToOne {
+class LangViewsFilter extends InOperator {
 
   /**
    * The current display.
@@ -23,6 +24,8 @@ class LangViewsFilter extends ManyToOne {
    *   The current display of the view.
    */
   protected $currentDisplay;
+
+  protected $valueFormType = 'select';
 
   /**
    * {@inheritdoc}
@@ -54,6 +57,22 @@ class LangViewsFilter extends ManyToOne {
    * Helper function that builds the query.
    */
   public function query() {
+    // Limit to just the searchAPIQuery class of queries
+    if ($this->query instanceof \Drupal\search_api\Plugin\views\query\SearchApiQuery) {
+      // If we have selected values process them
+      if (!empty($this->value)) {
+        // Use the array values as the labels have been indexed not the option value values
+        $values = array_values($this->value);
+        // Create a condition group where each selected option will be added in an OR
+        $conditionGroup = $this->query->createConditionGroup('OR');
+        foreach ($values as $value) {
+          // Add each value as a contains condition to the OR condition group
+          $conditionGroup->addCondition('custom_899', $value);
+        }
+        // Now add the or condition group back to the original condition group which is in AND
+        $this->query->addConditionGroup($conditionGroup);
+      }
+    }
     if (!($this->query instanceof Sql)) {
       return;
     }
