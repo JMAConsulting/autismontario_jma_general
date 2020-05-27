@@ -27,7 +27,7 @@ class SelectViewsFilter extends InOperator {
 
   protected $valueFormType = 'select';
 
-  protected $field;
+  public $field;
 
   /**
    * {@inheritdoc}
