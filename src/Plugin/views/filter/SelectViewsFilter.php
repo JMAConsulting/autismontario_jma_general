@@ -13,9 +13,9 @@ use Drupal\views\Views;
  *
  * @ingroup views_filter_handlers
  *
- * @ViewsFilter("lang_views_filter")
+ * @ViewsFilter("select_views_filter")
  */
-class LangViewsFilter extends InOperator {
+class SelectViewsFilter extends InOperator {
 
   /**
    * The current display.
@@ -27,6 +27,8 @@ class LangViewsFilter extends InOperator {
 
   protected $valueFormType = 'select';
 
+  protected $field;
+
   /**
    * {@inheritdoc}
    */
@@ -37,20 +39,6 @@ class LangViewsFilter extends InOperator {
     $this->currentDisplay = $view->current_display;
     // Load Civi service so we can use its query lib.
     \Drupal::service('civicrm')->initialize();
-  }
-
-  /**
-   * Helper function that generates the options.
-   *
-   * @return array
-   *   An array of states and their ids.
-   */
-  public function generateOptions() {
-    $languages = array_merge(
-      \CRM_Core_OptionGroup::values('language_20180621140924'),
-      \CRM_Core_OptionGroup::values('language_of_event_20181119205706')
-    );
-    return $languages;
   }
 
   /**
@@ -67,7 +55,7 @@ class LangViewsFilter extends InOperator {
         $conditionGroup = $this->query->createConditionGroup('OR');
         foreach ($values as $value) {
           // Add each value as a contains condition to the OR condition group
-          $conditionGroup->addCondition('custom_899', $value);
+          $conditionGroup->addCondition($this->field, $value);
         }
         // Now add the or condition group back to the original condition group which is in AND
         $this->query->addConditionGroup($conditionGroup);
