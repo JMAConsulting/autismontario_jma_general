@@ -11,11 +11,12 @@
   });
 
   $.each($('.views-field-address-details .right > a'), function() {
-    if ($(this).text() == $('#primary-phone').text()) { 
+    if ($(this).text() == $('#primary-phone').text()) {
       $('#primary-phone').hide();
     }
   });
-
+  $('#edit-container-container-0').insertBefore($('#edit-custom-897--wrapper'));
+  $('#edit-container-root').prepend($('.form-item-search-api-fulltext'));
   $(document).ready(function() {
     $.each($('[id^=address-map'), function() {
       var point = new google.maps.LatLng($(this).attr('data-lat'), $(this).attr('data-lng'));

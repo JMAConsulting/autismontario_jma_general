@@ -69,3 +69,7 @@ html:lang(fr) .civicrm-entity--view-mode-search-teaser.civicrm-entity--type-civi
 a:hover {
   text-decoration: underline;
 }
+
+.block-exposedformsearch-solr-page-1 .js-form-type-textfield input:not(#edit-search-api-fulltext) {
+  width: auto !important;
+}

@@ -500,6 +500,7 @@ function getCampDates($from, $to) {
   return $content;
 }
 
+
 function jma_customizations_views_data_alter(&$data) {
   /** @var \Drupal\search_api\IndexInterface $index */
   foreach (Index::loadMultiple() as $index) {
@@ -507,11 +508,45 @@ function jma_customizations_views_data_alter(&$data) {
 
     /** @var \Drupal\search_api\Item\FieldInterface $field */
     foreach ($index->getFields(TRUE) as $field_id => $field) {
-      if ($field_id == 'custom_899') {
-        $field_alias = _search_api_location_views_get_field_alias($field_id, $table);
+      $field_alias = _search_api_location_views_get_field_alias($field_id, $table);
+      if ($field->getType() == 'location') {
+        $field_alias_proximity = $field_alias . '_proximity';
         // Add boundary handlers.
+        $table[$field_alias_proximity] = [
+          'group' => $field->getLabel(),
+          'title' => t('Proximity (@field_name)', ['@field_name' => $field_alias]),
+          'help' => $field->getDescription(),
+          'filter' => [
+            'id' => 'geolocation_proximity_views_filter',
+            'allow empty' => TRUE,
+            'real field' => $field_alias,
+          ],
+        ];
+      }
+      if ($field_id == 'custom_899') {
         $table[$field_alias]['filter'] = [
           'id' => 'lang_views_filter',
+          'allow empty' => TRUE,
+          'real field' => $field_alias,
+        ];
+      }
+      elseif ($field_id == 'custom_898') {
+        $table[$field_alias]['filter'] = [
+          'id' => 'age_group_served_views_filter',
+          'allow empty' => TRUE,
+          'real field' => $field_alias,
+        ];
+      }
+      elseif ($field_id == 'custom_897') {
+        $table[$field_alias]['filter'] = [
+          'id' => 'services_provided_views_filter',
+          'allow empty' => TRUE,
+          'real field' => $field_alias,
+        ];
+      }
+      elseif ($field_id == 'custom_896') {
+        $table[$field_alias]['filter'] = [
+          'id' => 'accepting_client_views_filter',
           'allow empty' => TRUE,
           'real field' => $field_alias,
         ];
