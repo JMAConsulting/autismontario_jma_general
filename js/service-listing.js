@@ -15,8 +15,10 @@
       $('#primary-phone').hide();
     }
   });
-  $('#edit-container-container-0').insertBefore($('#edit-custom-897--wrapper'));
-  $('#edit-container-root').prepend($('.form-item-search-api-fulltext'));
+  $('#block-exposedformsearch-solr-page-1 #edit-container-container-0').insertBefore($('#edit-custom-897--wrapper'));
+  $('#block-exposedformsearch-solr-page-1 #edit-container-root').prepend($('#block-exposedformsearch-solr-page-1 .form-item-search-api-fulltext'));
+  $('#block-exposedformsearch-solr-page-1-2 #edit-container-container-1').hide();
+
   $(document).ready(function() {
     $.each($('[id^=address-map'), function() {
       var point = new google.maps.LatLng($(this).attr('data-lat'), $(this).attr('data-lng'));
