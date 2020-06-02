@@ -54,8 +54,11 @@ class SelectViewsFilter extends InOperator {
         // Create a condition group where each selected option will be added in an OR
         $conditionGroup = $this->query->createConditionGroup('OR');
         foreach ($values as $value) {
-          // Add each value as a contains condition to the OR condition group
-          $conditionGroup->addCondition($this->field, $value);
+          $indexedValue = $this->generateOptions()[$value];
+          if (!empty($indexedValue)) {
+            // Add each value as a contains condition to the OR condition group
+            $conditionGroup->addCondition($this->field, $indexedValue);
+          }
         }
         // Now add the or condition group back to the original condition group which is in AND
         $this->query->addConditionGroup($conditionGroup);
