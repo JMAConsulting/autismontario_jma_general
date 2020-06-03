@@ -120,6 +120,14 @@ class GeolocationProximityViewsFilter extends FilterPluginBase implements Contai
         '#weight' => 4,
         '#size' => 5,
       ],
+      'center_lat' => [
+        '#type' => 'hidden',
+        '#value' => NULL,
+      ],
+      'center_long' => [
+        '#type' => 'hidden',
+        '#value' => NULL,
+      ],
     ];
   }
 
@@ -149,6 +157,7 @@ class GeolocationProximityViewsFilter extends FilterPluginBase implements Contai
    * {@inheritdoc}
    */
   public function query() {
+    \Drupal::logger('geolocation')->notice(serialize($this->value));
     if (!($this->query instanceof Sql)) {
       return;
     }

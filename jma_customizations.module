@@ -380,6 +380,9 @@ function jma_customizations_form_alter(&$form, \Drupal\Core\Form\FormStateInterf
     }
     $form['event_type_id']['#options'] = $options;
   }
+  if ($form_id === "views_exposed_form" && $form['#id'] == "views-exposed-form-search-solr--page-1") {
+    $form['#validate'][] = 'solr_address_geocoder';
+  }
 }
 
 function jma_customizations_views_pre_render(ViewExecutable &$view) {
@@ -553,4 +556,72 @@ function jma_customizations_views_data_alter(&$data) {
       }
     }
   }
+}
+
+function solr_address_geocoder($form, FormStateInterface $form_state) {
+  $address = [];
+  $values = $form_state->getValues();
+  foreach (['street_address', 'city', 'postal_code'] as $key) {
+    if (!empty($values[$key])) {
+      $address[] = $values[$key];
+    }
+  }
+  $address = implode(',', $address);
+  if (!empty($address)) {
+    $result = geocode($address);
+    if (!$result || $result['status'] != 'OK') {
+      $form_state->setErrorByName('street_address', t('The address for proximity search was not found'));
+    }
+    elseif (empty($result['results'][0]['geometry']['location'])) {
+      $form_state->setValue('center_lat', $result['results'][0]['geometry']['location']['lat']);
+      $form_state->setValue('center_long', $result['results'][0]['geometry']['location']['long']);
+    }
+  }
+}
+
+function geocode($address) {
+  $config = \Drupal::config('geolocation_google_maps.settings');
+  if (empty($address)) {
+    return FALSE;
+  }
+
+  if (!empty($config->get('google_maps_base_url'))) {
+    $request_url = $config->get('google_maps_base_url');
+  }
+  else {
+    $request_url = GoogleMaps::$GOOGLEMAPSAPIURLBASE;
+  }
+  $request_url .= '/maps/api/geocode/json?address=' . urlencode($address);
+
+  if (!empty($config->get('google_map_api_server_key'))) {
+    $request_url .= '&key=' . $config->get('google_map_api_server_key');
+  }
+  elseif (!empty($config->get('google_map_api_key'))) {
+    $request_url .= '&key=' . $config->get('google_map_api_key');
+  }
+
+  if (!empty($config->get('google_map_custom_url_parameters')['language'])) {
+    $request_url .= '&language=' . $config->get('google_map_custom_url_parameters')['language'];
+  }
+
+  try {
+    $result = Json::decode(\Drupal::httpClient()->request('GET', $request_url)->getBody());
+  }
+  catch (RequestException $e) {
+    watchdog_exception('geolocation', $e);
+    return FALSE;
+  }
+
+  if ($result['status'] != 'OK' || empty($result['results'][0]['geometry'])) {
+    if (isset($result['error_message'])) {
+      \Drupal::logger('geolocation')->error(t('Unable to reverse geocode "@latitude, $longitude" with error: "@error". Request URL: @url', [
+        '@latitude' => $latitude,
+        '@$longitude' => $longitude,
+        '@error' => $result['error_message'],
+        '@url' => $request_url,
+      ]));
+    }
+  }
+
+  return $result;
 }
