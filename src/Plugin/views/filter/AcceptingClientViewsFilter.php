@@ -14,4 +14,13 @@ use Drupal\views\Views;
  *
  * @ViewsFilter("accepting_client_views_filter")
  */
-class AcceptingClientViewsFilter extends BooleanOperator {}
+class AcceptingClientViewsFilter extends BooleanOperator {
+
+  public function query() {
+    if ($this->query instanceof \Drupal\search_api\Plugin\views\query\SearchApiQuery) {
+      $operator = $this->value ? '=' : '<>';
+      $this->query->addCondition($this->realField, 'Accepting new clients', $operator);
+    }
+  }
+
+}
