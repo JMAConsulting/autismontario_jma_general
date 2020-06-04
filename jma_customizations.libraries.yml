@@ -16,3 +16,9 @@ search_facet:
   js:
     js/search-facet.js: {}
     js/google-map.js: {}
+
+advanced_search:
+  version: 1.0
+  css:
+    theme:
+      css/advanced_search.css: {}

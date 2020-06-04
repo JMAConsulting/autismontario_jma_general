@@ -382,6 +382,7 @@ function jma_customizations_form_alter(&$form, \Drupal\Core\Form\FormStateInterf
   }
   if ($form_id === "views_exposed_form" && $form['#id'] == "views-exposed-form-search-solr--page-1") {
     $form['#validate'][] = 'solr_address_geocoder';
+    $form['#attached']['library'][] = 'jma_customizations/advanced_search';
   }
 }
 

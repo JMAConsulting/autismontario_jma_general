@@ -17,7 +17,6 @@
   });
   $('#block-exposedformsearch-solr-page-1 #edit-container-container-0').insertBefore($('#edit-custom-897--wrapper'));
   $('#block-exposedformsearch-solr-page-1 #edit-container-root').prepend($('#block-exposedformsearch-solr-page-1 .form-item-search-api-fulltext'));
-  $('#block-exposedformsearch-solr-page-1-2 #edit-container-container-1').hide();
 
   $(document).ready(function() {
     $.each($('[id^=address-map'), function() {
