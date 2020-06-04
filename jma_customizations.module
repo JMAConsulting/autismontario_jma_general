@@ -31,6 +31,7 @@ function jma_customizations_css_alter(&$css, \Drupal\Core\Asset\AttachedAssetsIn
         "civicrm/service-listing-application",
         "civicrm/service-listing-application-confirm",
         "civicrm/service-listing-thankyou",
+        "civicrm/grant/transact",
     ];
     if (strpos($current_uri, 'civicrm') !== false && !in_array($current_uri, $paths)) {
         unset($css['themes/contrib/adminimal_theme/css/adminimal.css']);
@@ -159,7 +160,7 @@ function jma_customizations_preprocess_views_view_field(&$variables) {
 function jma_customizations_preprocess_field(&$variables) {
   if ($variables['entity_type'] == 'civicrm_contact' && $variables['field_name'] == 'organization_name') {
     $id = $variables['element']['#object']->id();
-    $contactDetails = \civicrm_api3('Contact', 'get', ['id' => $id, 'return' => ['custom_897', 'custom_896']]);
+    $contactDetails = \civicrm_api3('Contact', 'get', ['id' => $id, 'return' => ['custom_897', 'custom_896', 'custom_911', 'custom_895']]);
     $modulePath = \Drupal::moduleHandler()->getModule('jma_customizations')->getPath();
     if ($variables['element']['#view_mode'] === 'search_teaser') {
       $size = '16px';
@@ -189,7 +190,8 @@ function jma_customizations_preprocess_field(&$variables) {
           $variables['items'][0]['content']['#value'] .= ' <img src="'. file_create_url($modulePath . '/img/icon_not_accepting_' . $size . '.png') . '" title="' . E::ts('Not accepting new clients') . '">';
         }
       }
-      if ($size === '16px') {
+      if ($size === '16px' && ((!empty($contactDetails['values'][$contactDetails['id']]['custom_911']) && !in_array('None', $contactDetails['values'][$contactDetails['id']]['custom_911']))
+        || !empty($contactDetails['values'][$contactDetails['id']]['custom_895']))) {
         $variables['items'][0]['content']['#value'] = '<img src="'. file_create_url($modulePath . '/img/icon_verified_24px.svg') . '" title="' . E::ts('Verified listing') . '"> ' . $variables['items'][0]['content']['#value'];
       }
     }
