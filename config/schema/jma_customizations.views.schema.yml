@@ -1,0 +1,25 @@
+views.filter.geolocation_proximity_views_filter:
+  type: mapping
+  label: 'Geolocation Proximity Filter'
+  mapping:
+    distance:
+      type: string
+      label: 'Distance'
+    current_location:
+      type: integer
+      label: 'Current Location'
+    street_address:
+      type: string
+      label: 'Street Address'
+    city:
+      type: string
+      label: 'City'
+    postal_code:
+      type: string
+      label: 'Postal Code'
+    center_lat:
+      type: string
+      label: 'Center Latitude'
+    center_long:
+      type: string
+      label: 'Center Longitude'

@@ -80,53 +80,51 @@ class GeolocationProximityViewsFilter extends FilterPluginBase implements Contai
   /**
    * {@inheritdoc}
    */
-  public function buildExposedForm(&$form, FormStateInterface $form_state) {
-    parent::buildExposedForm($form, $form_state);
+  protected function valueForm(&$form, FormStateInterface $form_state) {
 
-    $identifier = $this->options['expose']['identifier'];
+    parent::valueForm($form, $form_state);
 
-    $form[$identifier] = [
+    $form['value']['#tree'] = TRUE;
+    $value_element = &$form['value'];
+
+    $value_element += [
       'distance' => [
-        '#title' => $this->t('Distance (in km)'),
         '#type' => 'textfield',
-        '#default_value' => 0,
-        '#weight' => 0,
-        '#size' => 30,
+        '#title' => $this->t('Distance'),
+        '#default_value' => !empty($this->value['distance']) ? $this->value['distance'] : 0,
+        '#weight' => 10,
       ],
       'current_location' => [
-        '#title' => $this->t('From my current Location'),
         '#type' => 'checkbox',
-        '#default_value' => 0,
-        '#weight' => 1,
+        '#title' => $this->t('From my current Location'),
+        '#default_value' => !empty($this->value['current_location']) ? $this->value['current_location'] : 0,
+        '#weight' => 20,
       ],
       'street_address' => [
-        '#title' => $this->t('Street Address'),
         '#type' => 'textfield',
-        '#default_value' => '',
-        '#weight' => 2,
-        '#size' => 50,
+        '#title' => $this->t('Street Address'),
+        '#default_value' => !empty($this->value['street_address']) ? $this->value['street_address'] : '',
+        '#weight' => 30,
       ],
       'city' => [
-        '#title' => $this->t('City'),
         '#type' => 'textfield',
-        '#default_value' => '',
-        '#weight' => 3,
-        '#size' => 10,
+        '#title' => $this->t('City'),
+        '#default_value' => !empty($this->value['city']) ? $this->value['city'] : '',
+        '#weight' => 40,
       ],
       'postal_code' => [
-        '#title' => $this->t('Postal Code'),
         '#type' => 'textfield',
-        '#default_value' => '',
-        '#weight' => 4,
-        '#size' => 5,
+        '#title' => $this->t('Postal Code'),
+        '#default_value' => !empty($this->value['postal_code']) ? $this->value['postal_code'] : '',
+        '#weight' => 40,
       ],
       'center_lat' => [
-        '#type' => 'hidden',
-        '#value' => NULL,
+        '#type' => 'textfield',
+        '#default_value' => NULL,
       ],
       'center_long' => [
-        '#type' => 'hidden',
-        '#value' => NULL,
+        '#type' => 'textfield',
+        '#default_value' => NULL,
       ],
     ];
   }
@@ -134,30 +132,20 @@ class GeolocationProximityViewsFilter extends FilterPluginBase implements Contai
   /**
    * {@inheritdoc}
    */
-  public function acceptExposedInput($input) {
-
-    $return_value = parent::acceptExposedInput($input);
-
-    //@TODO
-    return $return_value;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  protected function valueForm(&$form, FormStateInterface $form_state) {
-
-    parent::valueForm($form, $form_state);
-
-    $form['value']['#tree'] = TRUE;
-    $value_element = &$form['value'];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function query() {
-    \Drupal::logger('geolocation')->notice(serialize($this->value));
+    if ($this->query instanceof \Drupal\search_api\Plugin\views\query\SearchApiQuery) {
+      $location_option_params = [
+        'field' => $this->realField,
+        'radius' => $this->value['distance'],
+      ]; 
+      if (!empty($this->value['center_lat'])) {
+        $location_option_params['lat'] = $this->value['center_lat'];
+        $location_option_params['lon'] = $this->value['center_long'];
+      }
+      if (!empty($location_option_params['lat']) && !empty($location_option_params['lon'])) {
+        $this->query->setOption('search_api_location', [$location_option_params]);
+      }
+    }
     if (!($this->query instanceof Sql)) {
       return;
     }

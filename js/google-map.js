@@ -6,14 +6,16 @@
     $('.view-id-search_solr_.view-display-id-attachment_1').hide();
   }
 
+  var latElement = $('#block-exposedformsearch-solr-page-1').find('input[name*="center_lat"]');
+  var lngElement = $('#block-exposedformsearch-solr-page-1').find('input[name*="center_long"]');
+  latElement.parent().hide();
+  lngElement.parent().hide();
   getclientlocation();
 
   function getclientlocation () {
     // If the browser supports W3C Geolocation API.
     if (navigator.geolocation) {
 
-      var $latElement = $('input[name="center_lat"]');
-      var $lngElement = $('input[name="center_long"]');
       var $currentlocation = $('#edit-current-location');
 
       // Get the geolocation from the browser.
@@ -28,8 +30,8 @@
           // Display a success message.
           var locationString = Drupal.t('Browser location: @lat,@lng Accuracy: @accuracy m', {'@lat': lat, '@lng': lng, '@accuracy': accuracy});
           console.log(locationString);
-          $latElement.val(lat);
-          $lngElement.val(lng);
+          latElement.val(lat);
+          lngElement.val(lng);
         },
 
         // Error handler for getCurrentPosition()
