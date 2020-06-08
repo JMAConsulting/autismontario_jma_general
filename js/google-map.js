@@ -11,7 +11,7 @@
     if (this.checked) {
      $('input[name*="street_address"], input[name*="city"], input[name*="postal_code"]').val('');
      getclientlocation();
-    } 
+    }
   });
   $('input[name*="street_address"], input[name*="city"], input[name*="postal_code"]').on('keyup', function(e) {
     $('input[name*="current_location"]:checked').trigger('click');
@@ -22,6 +22,7 @@
   $('input[name*="city"]').attr('size', 15);
   $('input[name*="postal_code"]').attr('size', 7);
   $('input[name*="postal_code"]').attr('maxlength', 7);
+  $('input[name*="postal_code"]').attr('placeholder', 'x#x #x#');
 
   function getclientlocation () {
     // If the browser supports W3C Geolocation API.

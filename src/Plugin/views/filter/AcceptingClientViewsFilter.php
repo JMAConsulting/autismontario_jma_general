@@ -20,6 +20,7 @@ class AcceptingClientViewsFilter extends BooleanOperator {
     if ($this->query instanceof \Drupal\search_api\Plugin\views\query\SearchApiQuery) {
       $operator = $this->value ? '=' : '<>';
       $this->query->addCondition($this->realField, 'Accepting new clients', $operator);
+      $this->query->addCondition('contact_sub_type', 'service_provider', '=');
     }
   }
 
