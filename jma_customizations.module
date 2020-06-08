@@ -563,9 +563,15 @@ function solr_address_geocoder($form, FormStateInterface $form_state) {
   $address = [];
   $values = $form_state->getValues();
 
-  if (!empty($values['field_geolocation_2_proximity']['postal_code']) && !preg_match("/^[ABCEGHJKLMNPRSTVXY][0-9][A-Z][\s]*[0-9][A-Z][0-9]$/i", $values['field_geolocation_2_proximity']['postal_code'])) {
-    $form_state->setErrorByName('field_geolocation_2_proximity[postal_code]', t('Postal code format is not valid.'));
-    return;
+  if (!empty($values['field_geolocation_2_proximity']['postal_code'])) {
+    if (!preg_match("/^[A-Z][0-9][A-Z][\s]*[0-9][A-Z][0-9]$/i", $values['field_geolocation_2_proximity']['postal_code'])) {
+      $form_state->setErrorByName('field_geolocation_2_proximity[postal_code]', t('Postal code format is not valid.'));
+      return;
+    }
+    elseif (!preg_match("/^[ABCEGHJKLMNPRSTVXY][0-9][A-Z][\s]*[0-9][A-Z][0-9]$/i", $values['field_geolocation_2_proximity']['postal_code'])) {
+      $form_state->setErrorByName('field_geolocation_2_proximity[postal_code]', t('Please specify a valid Canadian postal code'));
+      return;
+    }
   }
   if (!empty($values['field_geolocation_2_proximity']['distance']) && preg_match("/[^0-9]/", $values['field_geolocation_2_proximity']['distance'])) {
     $form_state->setErrorByName('field_geolocation_2_proximity[distance]', t('Distance is numeric'));
@@ -574,9 +580,6 @@ function solr_address_geocoder($form, FormStateInterface $form_state) {
   foreach (['street_address', 'city', 'postal_code'] as $key) {
     if (!empty($values['field_geolocation_2_proximity'][$key])) {
       $address[] = $values['field_geolocation_2_proximity'][$key];
-      if ($key == 'postal_code' && !preg_match("/^[ABCEGHJKLMNPRSTVXY][0-9][A-Z][\s]*[0-9][A-Z][0-9]$/i", $values['field_geolocation_2_proximity'][$key])) {
-        $form_state->setErrorByName('field_geolocation_2_proximity[postal_code]', t('Postal code format is not valid.'));
-      }
     }
   }
   $address = implode(',', $address);

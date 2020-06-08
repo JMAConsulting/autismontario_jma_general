@@ -96,7 +96,7 @@ class GeolocationProximityViewsFilter extends FilterPluginBase implements Contai
       ],
       'current_location' => [
         '#type' => 'checkbox',
-        '#title' => $this->t('From my current Location'),
+        '#title' => $this->t('From my current location'),
         '#default_value' => !empty($this->value['current_location']) ? $this->value['current_location'] : 0,
         '#weight' => 20,
       ],
@@ -137,7 +137,7 @@ class GeolocationProximityViewsFilter extends FilterPluginBase implements Contai
       $location_option_params = [
         'field' => $this->realField,
         'radius' => $this->value['distance'],
-      ]; 
+      ];
       if (!empty($this->value['center_lat'])) {
         $location_option_params['lat'] = $this->value['center_lat'];
         $location_option_params['lon'] = $this->value['center_long'];
@@ -153,12 +153,6 @@ class GeolocationProximityViewsFilter extends FilterPluginBase implements Contai
     if (empty($this->value)) {
       return;
     }
-    /*
-    $this->query->addWhereExpression(
-      $this->options['group'],
-      self::getBoundaryQueryFragment($this->ensureMyTable(), $this->realField)
-    );
-    */
   }
 
 }
