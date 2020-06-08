@@ -563,21 +563,43 @@ function solr_address_geocoder($form, FormStateInterface $form_state) {
   $address = [];
   $values = $form_state->getValues();
 
+  if (!empty($values['field_geolocation_2_proximity']['postal_code']) && !preg_match("/^[ABCEGHJKLMNPRSTVXY][0-9][A-Z][\s]*[0-9][A-Z][0-9]$/i", $values['field_geolocation_2_proximity']['postal_code'])) {
+    $form_state->setErrorByName('field_geolocation_2_proximity[postal_code]', t('Postal code format is not valid.'));
+    return;
+  }
+  if (!empty($values['field_geolocation_2_proximity']['distance']) && preg_match("/[^0-9]/", $values['field_geolocation_2_proximity']['distance'])) {
+    $form_state->setErrorByName('field_geolocation_2_proximity[distance]', t('Distance is numeric'));
+    return;
+  }
   foreach (['street_address', 'city', 'postal_code'] as $key) {
     if (!empty($values['field_geolocation_2_proximity'][$key])) {
       $address[] = $values['field_geolocation_2_proximity'][$key];
+      if ($key == 'postal_code' && !preg_match("/^[ABCEGHJKLMNPRSTVXY][0-9][A-Z][\s]*[0-9][A-Z][0-9]$/i", $values['field_geolocation_2_proximity'][$key])) {
+        $form_state->setErrorByName('field_geolocation_2_proximity[postal_code]', t('Postal code format is not valid.'));
+      }
     }
   }
   $address = implode(',', $address);
   if (!empty($address)) {
     $result = geocode($address);
     if (!$result || $result['status'] != 'OK') {
-      $form_state->setErrorByName(['field_geolocation_2_proximity', 'street_address'], t('The address for proximity search was not found'));
+      $form_state->setErrorByName('field_geolocation_2_proximity[street_address]', t('The address for proximity search was not found'));
+      $form_state->setValue(['field_geolocation_2_proximity', 'center_lat'], NULL);
+      $form_state->setValue(['field_geolocation_2_proximity', 'center_long'], NULL);
     }
     elseif (!empty($result['results'][0]['geometry']['location'])) {
       $form_state->setValue(['field_geolocation_2_proximity', 'center_lat'], $result['results'][0]['geometry']['location']['lat']);
       $form_state->setValue(['field_geolocation_2_proximity', 'center_long'], $result['results'][0]['geometry']['location']['lng']);
     }
+    else {
+      $form_state->setValue(['field_geolocation_2_proximity', 'center_lat'], NULL);
+      $form_state->setValue(['field_geolocation_2_proximity', 'center_long'], NULL);
+    }
+  }
+  elseif (empty($values['field_geolocation_2_proximity']['current_location'])) {
+    // We don't have address or current_location so set center_lat and center_long to null in case they are set.
+    $form_state->setValue(['field_geolocation_2_proximity', 'center_lat'], NULL);
+    $form_state->setValue(['field_geolocation_2_proximity', 'center_long'], NULL);
   }
 }
 

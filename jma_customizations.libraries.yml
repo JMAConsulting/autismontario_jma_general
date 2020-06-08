@@ -19,6 +19,8 @@ search_facet:
 
 advanced_search:
   version: 1.0
+  js:
+    js/advanced_search.js: {}
   css:
     theme:
       css/advanced_search.css: {}

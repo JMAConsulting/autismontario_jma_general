@@ -6,18 +6,30 @@
     $('.view-id-search_solr_.view-display-id-attachment_1').hide();
   }
 
-  var latElement = $('#block-exposedformsearch-solr-page-1').find('input[name*="center_lat"]');
-  var lngElement = $('#block-exposedformsearch-solr-page-1').find('input[name*="center_long"]');
-  latElement.parent().hide();
-  lngElement.parent().hide();
   getclientlocation();
+  $('input[name*="current_location"]').on('click', function() {
+    if (this.checked) {
+     $('input[name*="street_address"], input[name*="city"], input[name*="postal_code"]').val('');
+     getclientlocation();
+    } 
+  });
+  $('input[name*="street_address"], input[name*="city"], input[name*="postal_code"]').on('keyup', function(e) {
+    $('input[name*="current_location"]:checked').trigger('click');
+  });
+
+  $('input[name*="center_lat"], input[name*="center_long"]').parent().hide()
+  $('input[name*="street_address"]').attr('size', 50);
+  $('input[name*="city"]').attr('size', 15);
+  $('input[name*="postal_code"]').attr('size', 7);
+  $('input[name*="postal_code"]').attr('maxlength', 7);
 
   function getclientlocation () {
     // If the browser supports W3C Geolocation API.
     if (navigator.geolocation) {
 
-      var $currentlocation = $('#edit-current-location');
-
+      var $currentlocation = $('input[name*="current_location"]');
+      var $latElement = $('input[name*="center_lat"]');
+      var $lngElement = $('input[name*="center_long"]');
       // Get the geolocation from the browser.
       navigator.geolocation.getCurrentPosition(
 
@@ -30,8 +42,8 @@
           // Display a success message.
           var locationString = Drupal.t('Browser location: @lat,@lng Accuracy: @accuracy m', {'@lat': lat, '@lng': lng, '@accuracy': accuracy});
           console.log(locationString);
-          latElement.val(lat);
-          lngElement.val(lng);
+          $latElement.val(lat);
+          $lngElement.val(lng);
         },
 
         // Error handler for getCurrentPosition()
@@ -55,8 +67,7 @@
               console.log(Drupal.t('No location data found. Reason: Unknown error.'));
               break;
           }
-
-          $currentlocation.attr('disabled', true);
+          $currentlocation.attr('readonly', true);
         },
 
         // Options for getCurrentPosition()
@@ -69,7 +80,7 @@
 
     }
     else {
-      $('#edit-current-location').attr('disabled', true);
+      $('input[name*="current_location"]').attr('readonly', true);
       console.log(Drupal.t('No location data found. Your browser does not support the W3C Geolocation API.'));
     }
   }
