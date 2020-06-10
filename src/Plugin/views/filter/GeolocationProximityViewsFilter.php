@@ -89,9 +89,17 @@ class GeolocationProximityViewsFilter extends FilterPluginBase implements Contai
 
     $value_element += [
       'distance' => [
-        '#type' => 'textfield',
-        '#title' => $this->t('Distance'),
+        '#type' => 'select',
+        '#title' => $this->t('Distance (in km)'),
         '#default_value' => !empty($this->value['distance']) ? $this->value['distance'] : 0,
+        '#options' => [
+          5 => '5',
+          10 => '10',
+          25 => '25',
+          50 => '50',
+          100 => '100',
+          250 => '250',
+        ],
         '#weight' => 10,
       ],
       'current_location' => [

@@ -573,10 +573,6 @@ function solr_address_geocoder($form, FormStateInterface $form_state) {
       return;
     }
   }
-  if (!empty($values['field_geolocation_2_proximity']['distance']) && preg_match("/[^0-9]/", $values['field_geolocation_2_proximity']['distance'])) {
-    $form_state->setErrorByName('field_geolocation_2_proximity[distance]', t('Distance is numeric'));
-    return;
-  }
   foreach (['street_address', 'city', 'postal_code'] as $key) {
     if (!empty($values['field_geolocation_2_proximity'][$key])) {
       $address[] = $values['field_geolocation_2_proximity'][$key];
