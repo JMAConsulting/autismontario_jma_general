@@ -68,6 +68,9 @@ function jma_customizations_preprocess_views_view_field(&$variables) {
         if (!empty($contactDetails['values'])) {
           if (!empty($contactDetails['values'][$contactDetails['id']]['custom_897'])) {
             $servicesProvided = $contactDetails['values'][$contactDetails['id']]['custom_897'];
+            if (in_array(2, $servicesProvided)) {
+              $title .= ' <img src="'. file_create_url($modulePath . '/img/icon_videoconferencing_24px.png') . '" title="' . E::ts('Online') . '">';
+            }
             if (in_array(3, $servicesProvided)) {
               $title .= ' <img src="'. file_create_url($modulePath . '/img/icon_local_travel_24px.png') . '" title="' . E::ts('Travels to nearby areas') . '">';
             }
@@ -175,6 +178,9 @@ function jma_customizations_preprocess_field(&$variables) {
     if (!empty($contactDetails['values'])) {
       if (!empty($contactDetails['values'][$contactDetails['id']]['custom_897'])) {
         $servicesProvided = $contactDetails['values'][$contactDetails['id']]['custom_897'];
+        if (in_array(2, $servicesProvided)) {
+          $variables['items'][0]['content']['#value'] .= ' <img src="'. file_create_url($modulePath . '/img/icon_videoconferencing_' . $size . '.png') . '" title="' . E::ts('Online') . '">';
+        }
         if (in_array(3, $servicesProvided)) {
           $variables['items'][0]['content']['#value'] .= ' <img src="'. file_create_url($modulePath . '/img/icon_local_travel_' . $size . '.png') . '" title="' . E::ts('Travels to nearby areas') . '">';
         }

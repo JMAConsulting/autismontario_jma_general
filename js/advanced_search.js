@@ -2,8 +2,9 @@
    $(document).ready(function() {
       $('#edit-submit-search-solr-').hide();
       $('#edit-actions').find('#edit-submit-search-solr-').show();
+      $('#block-exposedformsearch-solr-page-1 #edit-container-container-0').insertAfter($('#edit-container-container-1 #edit-custom-898--wrapper'));
       var simpleSearchLink = "<a href='#' id='simple-search' style='color:#006ba6;float:right;'>" + Drupal.t('Simple Search') + "</a>";
-      var advanceSearchLink = "<a href='#' id='advance-search' style='color:#006ba6;float:right;display:none;'>" + Drupal.t('Simple Search') + "</a>";
+      var advanceSearchLink = "<a href='#' id='advance-search' style='color:#006ba6;float:right;display:none;'>" + Drupal.t('Advanced Search') + "</a>";
       $('#block-exposedformsearch-solr-page-1 .form-item-search-api-fulltext').append(simpleSearchLink);
       $('#block-exposedformsearch-solr-page-1 .form-item-search-api-fulltext').append(advanceSearchLink);
       $('#simple-search').on('click', function(e) {
