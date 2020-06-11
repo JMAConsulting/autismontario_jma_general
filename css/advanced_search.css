@@ -1,4 +1,5 @@
 #block-exposedformsearch-solr-page-1-2 .views-ef-fieldset-container-1,
+#block-exposedformsearch-solr-page-1-2 .views-ef-fieldset-container-0,
 .js-form-item-field-geolocation-2-proximity-center-long,
 .js-form-item-field-geolocation-2-proximity-center-lat
  {
@@ -9,6 +10,6 @@ input[type="checkbox"][readonly] {
   pointer-events: none;
 }
 
-.block-exposedformsearch-solr-page-1 .js-form-type-textfield input:not(#edit-search-api-fulltext) {
+.block-exposedformsearch-solr-page-1 .js-form-type-textfield input {
   width: auto !important;
 }
