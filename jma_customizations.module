@@ -61,6 +61,51 @@ function jma_customizations_preprocess_views_view_field(&$variables) {
       }
       $variables['output'] = \Drupal\Core\Render\Markup::create(str_replace('Self-employed ', '', $content));
     }
+    if ($field->field == 'nothing') {
+      if (!empty($view->args[0])) {
+        $org = \civicrm_api3('Contact', 'get', ['id' => $view->args[0], 'sequential' => 1, 'return' => ['custom_897', 'custom_896', 'custom_911', 'custom_895']])['values'];
+        $ABAcreds = \CRM_Utils_Array::value('custom_911', $org[0]);
+        $ABAoptions = \CRM_Core_OptionGroup::values('aba_credentials_held_20200401123810');
+        $regulatedServices = \CRM_Utils_Array::value('custom_895', $org[0]);
+        $regulatedServicesOptions = \CRM_Core_OptionGroup::values('regulated_services_provided_20200226231106');
+        if (empty($regulatedServices) && empty($ABAcreds)) {
+          return;
+        }
+        $contactDetails = \civicrm_api3('Relationship', 'get', [
+          'contact_id_b' => $view->args[0],
+          'relationship_type_id' => 5,
+          'sequential' => 1,
+          'api.Contact.get' => [
+            'id' => "\$value.contact_id_a",
+            'sequential' => 1,
+            'return' => ['display_name', 'custom_910'],
+          ],
+        ])['values'];
+        $contacts = [];
+        foreach ($contactDetails as $value) {
+          if (!empty($value['api.Contact.get']['values'])) {
+            foreach ($value['api.Contact.get']['values'] as $key => $employees) {
+              if (!empty($contacts[$employees['id']])) {
+                continue;
+              }
+              if (!empty($employees['custom_910'])) {
+                $contacts[$employees['id']] = sprintf('<div>%s (%s #%s)</div>', $employees['display_name'], $ABAoptions[$ABAcreds[$key]], $employees['custom_910']);
+                unset($ABAcreds[$key]);
+              }
+              elseif (!empty($regulatedServices)) {
+                $contacts[$employees['id']] = sprintf('<div>%s (%s)</div>', $employees['display_name'], $regulatedServicesOptions[$regulatedServices[$key]]);
+                unset($regulatedServices[$key]);
+              }
+            }
+          }
+        }
+        if (!empty($contacts)) {
+          asort($contacts);
+          $contacts = implode(' ', $contacts);
+          $variables['output'] = \Drupal\Core\Render\Markup::create($variables['output'] . $contacts);
+        }
+      }
+    }
     if ($field->field == 'contact_sub_type') {
       $title = $variables['output'];
       if (!empty($view->args[0])) {
