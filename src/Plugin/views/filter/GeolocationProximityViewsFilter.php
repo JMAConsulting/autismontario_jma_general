@@ -182,9 +182,10 @@ class GeolocationProximityViewsFilter extends FilterPluginBase implements Contai
   public function geocoder($address) {
     $config = \Drupal::config('geolocation_google_maps.settings');
 
-    $request_url = $config->get('google_maps_base_url');
-    $request_url .= '/maps/api/geocode/json?address=' . urlencode($address);
-    $request_url .= '&key=' . $config->get('google_map_api_key');
+    $request_url = \Drupal\geolocation_google_maps\Plugin\geolocation\MapProvider\GoogleMaps::$GOOGLEMAPSAPIURLBASE
+      . '/maps/api/geocode/json?address='
+      . urlencode($address)
+      . '&key=' . $config->get('google_map_api_key');
 
     if (!empty($config->get('google_map_custom_url_parameters')['language'])) {
       $request_url .= '&language=' . $config->get('google_map_custom_url_parameters')['language'];
