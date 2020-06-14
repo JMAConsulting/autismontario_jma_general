@@ -78,29 +78,29 @@ function jma_customizations_preprocess_views_view_field(&$variables) {
           'api.Contact.get' => [
             'id' => "\$value.contact_id_a",
             'sequential' => 1,
-            'return' => ['display_name', 'custom_910'],
+            'return' => ['display_name', 'sort_name' 'custom_910'],
           ],
         ])['values'];
         $contacts = [];
         foreach ($contactDetails as $value) {
           if (!empty($value['api.Contact.get']['values'])) {
             foreach ($value['api.Contact.get']['values'] as $key => $employees) {
-              if (!empty($contacts[$employees['id']])) {
+              if (!empty($contacts[$employees['sort_name']])) {
                 continue;
               }
               if (!empty($employees['custom_910'])) {
-                $contacts[$employees['id']] = sprintf('<div>%s (%s #%s)</div>', $employees['display_name'], $ABAoptions[$ABAcreds[$key]], $employees['custom_910']);
+                $contacts[$employees['sort_name']] = sprintf('<div>%s (%s #%s)</div>', $employees['display_name'], $ABAoptions[$ABAcreds[$key]], $employees['custom_910']);
                 unset($ABAcreds[$key]);
               }
               elseif (!empty($regulatedServices)) {
-                $contacts[$employees['id']] = sprintf('<div>%s (%s)</div>', $employees['display_name'], $regulatedServicesOptions[$regulatedServices[$key]]);
+                $contacts[$employees['sort_name']] = sprintf('<div>%s (%s)</div>', $employees['display_name'], $regulatedServicesOptions[$regulatedServices[$key]]);
                 unset($regulatedServices[$key]);
               }
             }
           }
         }
         if (!empty($contacts)) {
-          asort($contacts);
+          ksort($contacts);
           $contacts = implode(' ', $contacts);
           $variables['output'] = \Drupal\Core\Render\Markup::create($variables['output'] . $contacts);
         }
