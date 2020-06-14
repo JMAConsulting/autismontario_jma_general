@@ -150,6 +150,22 @@ class GeolocationProximityViewsFilter extends FilterPluginBase implements Contai
         $location_option_params['lat'] = $this->value['center_lat'];
         $location_option_params['lon'] = $this->value['center_long'];
       }
+      else {
+        $address = [];
+        foreach (['street_address', 'city', 'postal_code'] as $key) {
+          if (!empty($this->value[$key])) {
+            $address[] = $this->value[$key];
+          }
+        }
+        $address = implode(',', $address);
+        if (!empty($address)) {
+          $result = $this->geocoder($address);
+          if (!empty($result['results'][0]['geometry']['location'])) {
+            $location_option_params['lat'] = $result['results'][0]['geometry']['location']['lat'];
+            $location_option_params['lon'] = $result['results'][0]['geometry']['location']['lng'];
+          }
+        }
+      }
       if (!empty($location_option_params['lat']) && !empty($location_option_params['lon'])) {
         $this->query->setOption('search_api_location', [$location_option_params]);
       }
@@ -161,6 +177,28 @@ class GeolocationProximityViewsFilter extends FilterPluginBase implements Contai
     if (empty($this->value)) {
       return;
     }
+  }
+
+  public function geocoder($address) {
+    $config = \Drupal::config('geolocation_google_maps.settings');
+
+    $request_url = $config->get('google_maps_base_url');
+    $request_url .= '/maps/api/geocode/json?address=' . urlencode($address);
+    $request_url .= '&key=' . $config->get('google_map_api_key');
+
+    if (!empty($config->get('google_map_custom_url_parameters')['language'])) {
+      $request_url .= '&language=' . $config->get('google_map_custom_url_parameters')['language'];
+    }
+
+    try {
+      $result = \Drupal\Component\Serialization\Json::decode(\Drupal::httpClient()->request('GET', $request_url)->getBody());
+    }
+    catch (\GuzzleHttp\Exception\RequestException $e) {
+      watchdog_exception('geolocation', $e);
+      return FALSE;
+    }
+
+    return $result;
   }
 
 }
