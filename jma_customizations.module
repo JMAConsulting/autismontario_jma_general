@@ -89,7 +89,8 @@ function jma_customizations_preprocess_views_view_field(&$variables) {
                 continue;
               }
               if (!empty($employees['custom_910'])) {
-                $contacts[$employees['sort_name']] = sprintf('<div>%s (%s #%s)</div>', $employees['display_name'], $ABAoptions[$ABAcreds[$key]], $employees['custom_910']);
+                $ABACreds = $ABAoptions[$ABAcreds[$key]] ?: $ABACreds;
+                $contacts[$employees['sort_name']] = sprintf('<div>%s (%s)</div>', $employees['display_name'], $ABACreds);
                 unset($ABAcreds[$key]);
               }
               elseif (!empty($regulatedServices)) {
@@ -101,7 +102,7 @@ function jma_customizations_preprocess_views_view_field(&$variables) {
         }
         if (!empty($contacts)) {
           ksort($contacts);
-          $contacts = implode(' ', $contacts);
+          $contacts = "<div id='staff-section'>" . implode(' ', $contacts) . "</div>";
           $variables['output'] = \Drupal\Core\Render\Markup::create($variables['output'] . $contacts);
         }
       }
@@ -433,6 +434,7 @@ function jma_customizations_form_alter(&$form, \Drupal\Core\Form\FormStateInterf
   }
   if ($form_id === "views_exposed_form" && $form['#id'] == "views-exposed-form-search-solr--page-1") {
     $form['#validate'][] = 'solr_address_geocoder';
+    $form['#validate'][] = 'validate_camp_date_filter';
     $form['#attached']['library'][] = 'jma_customizations/advanced_search';
   }
 }
@@ -607,6 +609,13 @@ function jma_customizations_views_data_alter(&$data) {
         ];
       }
     }
+  }
+}
+
+function validate_camp_date_filter($form, FormStateInterface $form_state) {
+  $values = $form_state->getValues();
+  if (!empty($values['custom_891']) && !empty($values['custom_892']) && strncmp($values['custom_891'], $values['custom_892'], 10) > 0) {
+    $form_state->setErrorByName('custom_891', t('\'From\' date should be greater or equal to \'To\' date'));
   }
 }
 
