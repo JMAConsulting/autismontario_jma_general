@@ -1,11 +1,21 @@
 (function($, Drupal) {
    $(document).ready(function() {
       $('#block-exposedformsearch-solr-page-1 #edit-container-container-0').insertAfter($('#edit-container-container-1 #edit-custom-898--wrapper'));
+      $('#block-exposedformsearch-solr-page-1 #edit-container-container-4--2').insertAfter($('#edit-container-container-1--2 #edit-custom-898--2--wrapper'));
       var simpleSearchLink = "<a href='#' id='simple-search' style='color:#006ba6;float:right;display:none;'>" + Drupal.t('Simple Search') + "</a>";
       var advanceSearchLink = "<a href='#' id='advance-search' style='color:#006ba6;float:right;'>" + Drupal.t('Advanced Search') + "</a>";
       $('#block-exposedformsearch-solr-page-1 .form-item-search-api-fulltext').append(simpleSearchLink);
       $('#block-exposedformsearch-solr-page-1 .form-item-search-api-fulltext').append(advanceSearchLink);
       $('#block-exposedformsearch-solr-page-1 #edit-container-container-1').hide();
+
+      $('.geolocation-latlng').each(function (e) {
+        var link = '<a target="_blank" href="https://www.google.com/maps?saddr=My+Location&daddr=' + $(this).text().replace(' ', '') + '"><img alt="Directions" src="//www.gstatic.com/images/icons/materiaaterial/system/2x/directions_gm_blue_20dp.png"></a>';
+        $(this).html(link);
+      });
+
+      if (!$('#block-mappedlocation').is(':visible')) {
+        $('div.attachment-before').hide();
+      }
       $('#simple-search').on('click', function(e) {
         $('#block-exposedformsearch-solr-page-1 #edit-container-container-1').hide();
         $('#advance-search').show();

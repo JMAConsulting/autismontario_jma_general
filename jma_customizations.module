@@ -78,7 +78,7 @@ function jma_customizations_preprocess_views_view_field(&$variables) {
           'api.Contact.get' => [
             'id' => "\$value.contact_id_a",
             'sequential' => 1,
-            'return' => ['display_name', 'sort_name' 'custom_910'],
+            'return' => ['display_name', 'sort_name' 'custom_910', 'custom_923', 'custom_924'],
           ],
         ])['values'];
         $contacts = [];
@@ -88,15 +88,15 @@ function jma_customizations_preprocess_views_view_field(&$variables) {
               if (!empty($contacts[$employees['sort_name']])) {
                 continue;
               }
-              if (!empty($employees['custom_910'])) {
-                $ABACreds = $ABAoptions[$ABAcreds[$key]] ?: $ABACreds;
-                $contacts[$employees['sort_name']] = sprintf('<div>%s (%s)</div>', $employees['display_name'], $ABACreds);
-                unset($ABAcreds[$key]);
+              $creds = [];
+              if (!empty($employees['custom_923'])) {
+                $creds[] = $ABAoptions[$employees['custom_923']];
               }
-              elseif (!empty($regulatedServices)) {
-                $contacts[$employees['sort_name']] = sprintf('<div>%s (%s)</div>', $employees['display_name'], $regulatedServicesOptions[$regulatedServices[$key]]);
-                unset($regulatedServices[$key]);
+              if (!empty($employees['custom_924'])) {
+                $creds[] = $regulatedServicesOptions[$employees['custom_924']];
               }
+              $creds = !empty($creds) ? '(' . implode(', ', $creds) . ')' : '';
+              $contacts[$employees['sort_name']] = sprintf('<div>%s %s %s</div>', '<img src="'. file_create_url($modulePath . '/img/icon_verified_24px.svg') . '" title="' . E::ts('Verified listing') . '"> ', $employees['display_name'], $creds);
             }
           }
         }

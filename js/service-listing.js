@@ -16,7 +16,8 @@
     }
   });
   $('#block-exposedformsearch-solr-page-1 #edit-container-root').prepend($('#block-exposedformsearch-solr-page-1 .form-item-search-api-fulltext'));
-  $('#staff-section').insertAfter($('.views-field .views-field-address-details'));
+  $('#block-exposedformsearch-solr-page-1 #edit-container-root--2').prepend($('#block-exposedformsearch-solr-page-1 .form-item-search-api-fulltext'));
+  $('#staff-section').insertAfter($('.views-field').last());
 
   $(document).ready(function() {
     $.each($('[id^=address-map'), function() {
