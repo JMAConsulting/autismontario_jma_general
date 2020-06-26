@@ -13,3 +13,80 @@ input[type="checkbox"][readonly] {
 .block-exposedformsearch-solr-page-1 .js-form-type-textfield input {
   width: auto !important;
 }
+
+.form-item, .form-actions {
+  margin-top: unset !important;
+  margin-bottom: 0.5em !important;
+}
+
+.collapse-processed:not([open]) > summary:before,
+.collapse-processed > summary:before {
+  display: none !important;
+}
+
+.views-ef-fieldset-container-0 > .details-wrapper {
+  display: inline-flex;
+}
+
+@media screen and (min-width: 1200px) {
+  .form-item-custom-899, .form-item-custom-896 {
+    left: 0px;
+    top: 0px;
+    width: 350px !important;
+    text-align: right;
+    display: block !important;
+  }
+
+  label[for=edit-custom-899], label[for=edit-custom-896], label[for=edit-custom-899--2], label[for=edit-custom-896--2] {
+    float: left;
+    margin: 1px;
+    display: block !important;
+  }
+
+  #edit-custom-897, #edit-custom-898, #edit-custom-897--2, #edit-custom-898--2 {
+    width: 42% !important;
+  }
+
+  #edit-custom-897 > .form-checkboxes, #edit-custom-898 > .form-checkboxes,
+  #edit-custom-897--2 > .form-checkboxes, #edit-custom-898--2 > .form-checkboxes   {
+    width: 50%;
+    float: right;
+    text-align: left;
+  }
+
+  #edit-custom-896, #edit-custom-896--2 {
+    width: 36% !important;
+  }
+
+  .fieldset-wrapper {
+    margin-top: -24px;
+  }
+
+  #edit-custom-899:lang(fr), #edit-custom-899--2:lang(fr) {
+    width: 125px !important;
+  }
+
+  .form-item-field-geolocation-2-proximity-street-address, .form-item-field-geolocation-2-proximity-city,
+  .form-item-field-geolocation-2-proximity-postal-code, .form-item-custom-891, .form-item-custom-892 {
+    display: inline-flex !important;
+  }
+
+  .views-ef-fieldset-container-1 .form-type-textfield label {
+    padding-right: 1em !important;
+    width: 111px;
+  }
+
+  label[for=edit-custom-891], label[for=edit-custom-892], label[for=edit-custom-891--2], label[for=edit-custom-892--2] {
+    width: 40px !important;
+  }
+}
+
+@media screen and (max-width: 1200px) {
+  .block-exposedformsearch-solr-page-1 .js-form-type-textfield input:not(#edit-search-api-fulltext) {
+        width: calc(100% - 100px) !important;
+  }
+  .views-ef-fieldset-container-0 > .details-wrapper {
+    display: flex;
+    flex-direction: column;
+  }
+}
