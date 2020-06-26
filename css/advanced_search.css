@@ -6,6 +6,10 @@
   display: none;
 }
 
+.block-exposedformsearch-solr-page-1 #edit-actions.form-actions {
+  bottom: -1.5em;
+}
+
 input[type="checkbox"][readonly] {
   pointer-events: none;
 }

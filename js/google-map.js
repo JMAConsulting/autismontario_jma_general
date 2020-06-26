@@ -24,7 +24,7 @@
   $('input[name*="postal_code"]').attr('maxlength', 7);
   $('input[name*="postal_code"]').attr('placeholder', 'x#x #x#');
 
-  $('.view-display-id-attachment_1').on('click', function(e)) {
+  $('.view-display-id-attachment_1').on('click', function(e) {
     window.open("/contact-map");
   });
 
