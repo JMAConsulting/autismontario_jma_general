@@ -1,7 +1,7 @@
 #block-exposedformsearch-solr-page-1-2 .views-ef-fieldset-container-1,
 #block-exposedformsearch-solr-page-1-2 .views-ef-fieldset-container-0,
-.js-form-item-field-geolocation-2-proximity-center-long,
-.js-form-item-field-geolocation-2-proximity-center-lat
+.form-item-field-geolocation-2-proximity-center-long,
+.form-item-field-geolocation-2-proximity-center-lat
  {
   display: none;
 }
