@@ -7,7 +7,13 @@
 }
 
 .block-exposedformsearch-solr-page-1 #edit-actions.form-actions {
-  bottom: -1.5em;
+  bottom: -2em;
+}
+
+@media (min-width: 768px;) {
+  .block-exposedformsearch-solr-page-1 #edit-actions.form-actions {
+    bottom: -1.5em;
+  }
 }
 
 input[type="checkbox"][readonly] {
