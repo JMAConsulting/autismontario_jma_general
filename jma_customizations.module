@@ -78,7 +78,7 @@ function jma_customizations_preprocess_views_view_field(&$variables) {
           'api.Contact.get' => [
             'id' => "\$value.contact_id_a",
             'sequential' => 1,
-            'return' => ['display_name', 'sort_name' 'custom_910', 'custom_923', 'custom_924'],
+            'return' => ['display_name', 'sort_name', 'custom_910', 'custom_923', 'custom_924'],
           ],
         ])['values'];
         $contacts = [];
