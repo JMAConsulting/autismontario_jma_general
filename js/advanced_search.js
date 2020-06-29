@@ -34,7 +34,7 @@
         $(this).hide();
       });
       $('#edit-submit-search-solr-').on('click', function(e) {
-        if ($('#simple-search').is(':visible')) {
+        if ($('#advance-search').is(':visible')) {
           $('#edit-container-container-1 input').each(function (e) {
             $(this).val('');
             $(this).prop('checked', false);
