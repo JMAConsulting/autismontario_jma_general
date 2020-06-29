@@ -18,8 +18,10 @@
       }
 
       // Ensure that the magnifying glass shows.
-      $('#edit-submit-search-solr-').hide();
-      $('#edit-actions').find('#edit-submit-search-solr-').show();
+      if (!$('.path-search').length) {
+        $('#edit-submit-search-solr-').hide();
+        $('#edit-actions').find('#edit-submit-search-solr-').show();
+      }
 
       $('#simple-search').on('click', function(e) {
         $('#block-exposedformsearch-solr-page-1 #edit-container-container-1').hide();
