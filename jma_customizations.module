@@ -90,10 +90,14 @@ function jma_customizations_preprocess_views_view_field(&$variables) {
               }
               $creds = [];
               if (!empty($employees['custom_923'])) {
-                $creds[] = $ABAoptions[$employees['custom_923']];
+                foreach ($employees['custom_923'] as $cred) {
+                  $creds[] = $ABAoptions[$cred];
+                }
               }
               if (!empty($employees['custom_924'])) {
-                $creds[] = $regulatedServicesOptions[$employees['custom_924']];
+                foreach  ($employees['custom_924'] as $cred) {
+                  $creds[] = $regulatedServicesOptions[$cred];
+                }
               }
               $creds = !empty($creds) ? '(' . implode(', ', $creds) . ')' : '';
               $contacts[$employees['sort_name']] = sprintf('<div>%s %s %s</div>', '<img src="'. file_create_url($modulePath . '/img/icon_verified_24px.svg') . '" title="' . E::ts('Verified listing') . '"> ', $employees['display_name'], $creds);
@@ -187,7 +191,7 @@ function jma_customizations_preprocess_views_view_field(&$variables) {
             }
           }
           if (!empty($details['geo_code_1']) && !empty($details['geo_code_2'])) {
-            $html = '<div id="address-map-%key%" data-lat="%lat%" data-lng="%long%" style="height: 100px; widgth: 100%;" data-maker-title="%street_address%"></div>';
+            $html = '<div id="address-map-%key%" onclick="window.location.href=\'/contact-map/' . $view->args[0] .'\'" data-lat="%lat%" data-lng="%long%" style="height: 100px; widgth: 100%;" data-maker-title="%street_address%"></div>';
             $html = str_replace('%key%', $key + 1, $html);
             $html = str_replace('%lat%', $details['geo_code_1'], $html);
             $html = str_replace('%long%', $details['geo_code_2'], $html);

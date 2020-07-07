@@ -9,7 +9,7 @@
       $('#block-exposedformsearch-solr-page-1 #edit-container-container-1').hide();
 
       $('.geolocation-latlng').each(function (e) {
-        var link = '<a target="_blank" href="https://www.google.com/maps?saddr=My+Location&daddr=' + $(this).text().replace(' ', '') + '"><img alt="Directions" src="//www.gstatic.com/images/icons/materiaaterial/system/2x/directions_gm_blue_20dp.png"></a>';
+        var link = '<a target="_blank" href="https://www.google.com/maps?saddr=My+Location&daddr=' + $(this).text().replace(' ', '') + '"><img alt="Directions" src="//www.gstatic.com/images/icons/material/system/2x/directions_gm_blue_20dp.png"></a>';
         $(this).html(link);
       });
 
@@ -19,7 +19,6 @@
 
       // Ensure that the magnifying glass shows.
       if (!$('.path-search').length) {
-        $('#edit-submit-search-solr-').hide();
         $('#edit-actions').find('#edit-submit-search-solr-').show();
       }
 

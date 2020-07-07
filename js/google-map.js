@@ -25,7 +25,26 @@
   $('input[name*="postal_code"]').attr('placeholder', 'x#x #x#');
 
   $('.view-display-id-attachment_1').on('click', function(e) {
-    window.open("/contact-map");
+    var contactIds = '';
+    var eventIds = '';
+    e.preventDefault();
+    $('.geolocation-map-wrapper .geolocation-location').each(function(e) {
+      var type = $('.location-content > .views-field-search-api-datasource .field-content', $(this)).text();
+      if (type == 'entity:civicrm_event') {
+        var id = $('.location-content > .views-field-id-1 .field-content', $(this)).text();
+        eventIds = eventIds == '' ? id : eventIds + '+' + id;
+      }
+      else if (type == 'entity:civicrm_contact') {
+        var id = $('.location-content > .views-field-id .field-content', $(this)).text();
+        contactIds = contactIds == '' ? id : contactIds + '+' + id;
+      }
+    });
+    if (contactIds != '' || eventIds != '') {
+      window.open("/contact-map/" + contactIds + eventIds);
+    }
+    else {
+      window.open("/contact-map");
+    }
   });
 
   function getclientlocation () {

@@ -21,7 +21,7 @@ input[type="checkbox"][readonly] {
 }
 
 .block-exposedformsearch-solr-page-1 .js-form-type-textfield input {
-  width: auto !important;
+  width: 85% !important;
 }
 
 .form-item, .form-actions {
