@@ -13,7 +13,7 @@
         $(this).html(link);
       });
 
-      if (!$('#block-mappedlocation').is(':visible')) {
+      if (!$('#block-location').is(':visible')) {
         $('div.attachment-before').hide();
       }
 
