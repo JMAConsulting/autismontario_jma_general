@@ -11,10 +11,13 @@
   });
 
   $.each($('.views-field-address-details .right > a'), function() {
-    if ($(this).text() == $('#primary-phone').text()) { 
+    if ($(this).text() == $('#primary-phone').text()) {
       $('#primary-phone').hide();
     }
   });
+  $('#block-exposedformsearch-solr-page-1 #edit-container-root').prepend($('#block-exposedformsearch-solr-page-1 .form-item-search-api-fulltext'));
+  $('#block-exposedformsearch-solr-page-1 #edit-container-root--2').prepend($('#block-exposedformsearch-solr-page-1 .form-item-search-api-fulltext'));
+  $('#staff-section').insertAfter($('.views-field').last());
 
   $(document).ready(function() {
     $.each($('[id^=address-map'), function() {
