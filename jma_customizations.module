@@ -550,6 +550,33 @@ function jma_customizations_user_login($account) {
   }
 }
 
+/**
+ * @param \Drupal\user\UserInterface $user
+ *
+ * Implements hook_ENTITY_TYPE_insert() for user entities.
+ */
+function jma_customizations_user_insert(\Drupal\user\UserInterface $user) {
+  $userId = $user->id();
+  $cid = CRM_Core_DAO::singleValueQuery("SELECT contact_id FROM civicrm_uf_match WHERE uf_id = %1", [1 => [$userId, "Integer"]]);
+  if (!empty($cid)) {
+    // Check if this is a primary contact.
+    $authorizedContact = civicrm_api3('Contact', 'get', [
+      'id' => $cid,
+      'contact_sub_type' => "authorized_contact",
+    ]);
+    if (!empty($authorizedContact['count']) && $authorizedContact['count'] == 1) {
+      // The current contact is a primary contact.
+      // Check roles to see if this is already an authorized contact.
+      $roles = (array) $user->getRoles();
+      if (!in_array('authorized_contact', $roles)) {
+        $roles = array_merge($roles, ['authorized_contact']);
+        $user->set('roles', array_unique($roles));
+        $user->save();
+      }
+    }
+  }
+}
+
 function jma_customizations_form_user_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
   $current_user = \Drupal::currentUser();
   $roles = (array) $current_user->getRoles();
