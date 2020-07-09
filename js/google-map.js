@@ -36,11 +36,11 @@
       }
       else if (type == 'entity:civicrm_contact') {
         var id = $('.location-content > .views-field-id .field-content', $(this)).text();
-        contactIds = contactIds == '' ? id : contactIds + '+' + id;
+        contactIds = contactIds == '' ? 'contact' + id : contactIds + '+contact' + id;
       }
     });
     if (contactIds != '' || eventIds != '') {
-      window.open("/contact-map/" + contactIds + eventIds);
+      window.open("/event-location/" + eventIds + contactIds);
     }
     else {
       window.open("/contact-map");
