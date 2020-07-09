@@ -492,7 +492,7 @@ function jma_customizations_views_pre_render(ViewExecutable &$view) {
       if ($row->_entity) {
         $loc_block_id = $row->_entity->toArray()['loc_block_id'];
         if (!empty($loc_block_id[0]['target_id'])) {
-          $sql = "SELECT CONCAT(street_address, ',', city, ',', postal_code, ',', 'Ontario') FROM civicrm_address a INNER JOIN civicrm_loc_block lb ON lb.address_id = a.id WHERE lb.id = " . $loc_block_id[0
+          $sql = "SELECT CONCAT(street_address, ',', city, ',', postal_code, ',', 'Ontario') FROM civicrm_address a INNER JOIN civicrm_loc_block lb ON lb.address_id = a.id WHERE lb.id = " . $loc_block_id[0]['target_id'];
           $view->result[$k]->_entity->set('summary', str_replace(',', "\n", \CRM_Core_DAO::singleValueQuery($sql)));
         }
       }
@@ -522,10 +522,9 @@ function jma_customizations_views_pre_render(ViewExecutable &$view) {
          $params[$k]['data'] = $params[$k];
         }
         $row->_entity->set('id', $id);
-        $row->_entity->set('title', $contact_ent->get('display_name')->value);
+        $row->_entity->set('title', str_replace('Self-employed', '', $contact_ent->get('display_name')->value));
         $row->_entity->set('summary', $fulladdress);
         $row->_entity->set('field_geolocation', $params);
-        $view->result[$k]->_entity = clone $row->_entity;
       }
     }
   }
