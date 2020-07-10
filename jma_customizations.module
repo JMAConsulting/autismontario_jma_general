@@ -91,12 +91,16 @@ function jma_customizations_preprocess_views_view_field(&$variables) {
               $creds = [];
               if (!empty($employees['custom_953'])) {
                 foreach ($employees['custom_953'] as $cred) {
-                  $creds[] = $ABAoptions[$cred];
+                  if (!empty($ABAoptions[$cred])) {
+                    $creds[] = $ABAoptions[$cred];
+                  }
                 }
               }
               if (!empty($employees['custom_954'])) {
                 foreach  ($employees['custom_954'] as $cred) {
-                  $creds[] = $regulatedServicesOptions[$cred];
+                  if (!empty($regulatedServicesOptions[$cred])) {
+                    $creds[] = $regulatedServicesOptions[$cred];
+                  }
                 }
               }
               $creds =  implode(', ', $creds);
