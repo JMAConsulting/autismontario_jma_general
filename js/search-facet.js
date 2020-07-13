@@ -8,6 +8,8 @@
           $(this).text('Répertoire des services');
         }
       });
+      $('#edit-container-container-2 .details-title').html($('#edit-container-container-2 .details-title').html().replace('Proximity', 'Proximité'));
+      $('#edit-container-container-0 .details-title').html($('#edit-container-container-0 .details-title').html().replace('Camp Session', 'Session de camp'));
     }
   });
 
