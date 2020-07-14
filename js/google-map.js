@@ -6,7 +6,14 @@
     $('.view-id-search_solr_.view-display-id-attachment_1').hide();
   }
 
-  getclientlocation();
+  if (!navigator.geolocation.getCurrentPosition()) {
+    $('input[name*="current_location"]').attr('readonly', true);
+    console.log(Drupal.t('No location data found. Your browser does not support the W3C Geolocation API.'));
+  }
+  else {
+    getclientlocation();
+  }
+
   $('input[name*="current_location"]').on('click', function() {
     if (this.checked) {
      $('input[name*="street_address"], input[name*="city"], input[name*="postal_code"]').val('');
@@ -36,11 +43,11 @@
       }
       else if (type == 'entity:civicrm_contact') {
         var id = $('.location-content > .views-field-id .field-content', $(this)).text();
-        contactIds = contactIds == '' ? id : contactIds + '+' + id;
+        contactIds = contactIds == '' ? 'contact' + id : contactIds + '+contact' + id;
       }
     });
     if (contactIds != '' || eventIds != '') {
-      window.open("/contact-map/" + contactIds + eventIds);
+      window.open("/event-location/" + eventIds + contactIds);
     }
     else {
       window.open("/contact-map");
@@ -101,11 +108,6 @@
           maximumAge: 6000
         }
       );
-
-    }
-    else {
-      $('input[name*="current_location"]').attr('readonly', true);
-      console.log(Drupal.t('No location data found. Your browser does not support the W3C Geolocation API.'));
     }
   }
 

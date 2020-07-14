@@ -20,6 +20,10 @@ input[type="checkbox"][readonly] {
   pointer-events: none;
 }
 
+label[for="edit-field-geolocation-2-proximity-current-location"] {
+  pointer-events:none;
+}
+
 .block-exposedformsearch-solr-page-1 .js-form-type-textfield input {
   width: 85% !important;
 }

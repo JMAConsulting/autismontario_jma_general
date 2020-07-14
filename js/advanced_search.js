@@ -13,13 +13,13 @@
         $(this).html(link);
       });
 
-      if (!$('#block-location').is(':visible')) {
+      if (!$('#block-mappedlocation, #block-location').is(':visible')) {
         $('div.attachment-before').hide();
       }
 
       // Ensure that the magnifying glass shows.
       if (!$('.path-search').length) {
-	$('#edit-submit-search-solr-').hide();
+        $('#edit-submit-search-solr-').hide();
         $('#edit-actions').find('#edit-submit-search-solr-').show();
       }
 

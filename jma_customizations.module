@@ -91,12 +91,16 @@ function jma_customizations_preprocess_views_view_field(&$variables) {
               $creds = [];
               if (!empty($employees['custom_953'])) {
                 foreach ($employees['custom_953'] as $cred) {
-                  $creds[] = $ABAoptions[$cred];
+                  if (!empty($ABAoptions[$cred])) {
+                    $creds[] = $ABAoptions[$cred];
+                  }
                 }
               }
               if (!empty($employees['custom_954'])) {
                 foreach  ($employees['custom_954'] as $cred) {
-                  $creds[] = $regulatedServicesOptions[$cred];
+                  if (!empty($regulatedServicesOptions[$cred])) {
+                    $creds[] = $regulatedServicesOptions[$cred];
+                  }
                 }
               }
               $creds =  implode(', ', $creds);
@@ -487,6 +491,47 @@ function jma_customizations_views_pre_render(ViewExecutable &$view) {
     }
     $view->result = $results;
   }
+  if ($view->id() == 'event_location') {
+    foreach ($view->result as $k => $row) {
+      if ($row->_entity) {
+        $loc_block_id = $row->_entity->toArray()['loc_block_id'];
+        if (!empty($loc_block_id[0]['target_id'])) {
+          $sql = "SELECT CONCAT(street_address, ',', city, ',', postal_code, ',', 'Ontario') FROM civicrm_address a INNER JOIN civicrm_loc_block lb ON lb.address_id = a.id WHERE lb.id = " . $loc_block_id[0]['target_id'];
+          $view->result[$k]->_entity->set('summary', str_replace(',', "\n", \CRM_Core_DAO::singleValueQuery($sql)));
+        }
+      }
+      else {
+        $id = $row->id;
+        $contact_ent = \Drupal::entityTypeManager()->getStorage('civicrm_contact')->load($id);
+        if (!empty($view->result[0]->_entity)) {
+          $row->_entity = clone $view->result[0]->_entity;
+        }
+        else {
+          $row->_entity = \Drupal::entityTypeManager()->getStorage('civicrm_event')->load(11);
+        }
+        $addresses = civicrm_api3('Address', 'get', ['sequential' => 1, 'contact_id' => $id])['values'];
+        $params = [];
+        $fulladdress = NULL;
+        foreach ($addresses as $k => $address) {
+          $address = (object) $address;
+          $fulladdress = sprintf("\n %s \n %s \n %s \n Ontario", $address->street_address, $address->city, $address->postal_code);
+          $address_id = $address->id;
+          $params[$k] = [
+           'lat' => $address->geo_code_1,
+           'lng'=> $address->geo_code_2,
+           'lat_sin' => sin(deg2rad($address->geo_code_1)),
+           'lat_cos' => cos(deg2rad($address->geo_code_1)),
+           'lng_rad' => deg2rad($address->geo_code_2),
+         ];
+         $params[$k]['data'] = $params[$k];
+        }
+        $row->_entity->set('id', $id);
+        $row->_entity->set('title', str_replace('Self-employed', '', $contact_ent->get('display_name')->value));
+        $row->_entity->set('summary', $fulladdress);
+        $row->_entity->set('field_geolocation', $params);
+      }
+    }
+  }
   if ($view->id() == 'search_solr_' || $view->id() == 'service_listing') {
     $view->element['#attached']['library'][] = 'jma_customizations/jma_customizations';
     $view->element['#attached']['library'][] = 'jma_customizations/service_listing';
@@ -498,6 +543,27 @@ function jma_customizations_views_pre_render(ViewExecutable &$view) {
  * Implements hook_views_pre_execute().
  */
 function jma_customizations_views_pre_execute(ViewExecutable &$view) {
+  if ($view->id() == 'event_location') {
+    $query = &$view->build_info['query'];
+    $ids = explode(' ', $view->args[0]);
+    foreach ($ids as $k => $id) {
+      if (strstr($id, 'contact')) {
+        $ids[$k] = str_replace('contact', '', $id);
+      }
+      else {
+        unset($ids[$k]);
+      }
+    }
+    $ids = empty($ids) ? [] : $ids;
+    if (!empty($ids)) {
+       $query2 = \Drupal::database()->select('{civicrm_contact}', 'civicrm_contact');
+       $query2->addField('civicrm_contact', 'id', 'id');
+       $query2->innerJoin('civicrm_contact__field_geolocation', 'civicrm_contact__field_geolocation', 'civicrm_contact.id = civicrm_contact__field_geolocation.entity_id');
+       $query2->condition('civicrm_contact.id', $ids, 'IN');
+       $query = $query->union($query2);
+       $view->build_info['query'] = $query;
+     }
+  }
   if ($view->id() == 'event_map') {
     $view2 = Views::getView('contact_map');
     $view2->build('page_1');
