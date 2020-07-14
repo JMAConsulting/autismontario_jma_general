@@ -6,7 +6,14 @@
     $('.view-id-search_solr_.view-display-id-attachment_1').hide();
   }
 
-  getclientlocation();
+  if (!navigator.geolocation.getCurrentPosition()) {
+    $('input[name*="current_location"]').attr('readonly', true);
+    console.log(Drupal.t('No location data found. Your browser does not support the W3C Geolocation API.'));
+  }
+  else {
+    getclientlocation();
+  }
+
   $('input[name*="current_location"]').on('click', function() {
     if (this.checked) {
      $('input[name*="street_address"], input[name*="city"], input[name*="postal_code"]').val('');
@@ -101,11 +108,6 @@
           maximumAge: 6000
         }
       );
-
-    }
-    else {
-      $('input[name*="current_location"]').attr('readonly', true);
-      console.log(Drupal.t('No location data found. Your browser does not support the W3C Geolocation API.'));
     }
   }
 
