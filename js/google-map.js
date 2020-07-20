@@ -6,7 +6,7 @@
     $('.view-id-search_solr_.view-display-id-attachment_1').hide();
   }
 
-  if (!navigator.geolocation.getCurrentPosition()) {
+  if (!navigator.geolocation) {
     $('input[name*="current_location"]').attr('readonly', true);
     console.log(Drupal.t('No location data found. Your browser does not support the W3C Geolocation API.'));
   }
