@@ -17,6 +17,11 @@
         $('div.attachment-before').hide();
       }
 
+      $('label[for=edit-custom-897-2]').prepend('<span class="provider-icon icon_videoconferencing-img" title="' + Drupal.t('Online') + '"></span>');
+      $('label[for=edit-custom-897-3]').prepend('<span class="provider-icon icon_local_travel-img" title="' + Drupal.t('Travels to nearby areas') + '"></span>');
+      $('label[for=edit-custom-897-4]').prepend('<span class="provider-icon icon_remote_travel-img" title="' + Drupal.t('Travels to remote areas') + '"></span>');
+      $('#edit-container-container-1').append('<br/><div class="js-form-item form-item js-form-type-textfield form-type-textfield"><span class="provider-icon icon_accepting-img"></span> <strong>' + Drupal.t('Accepting new clients') +'</strong></div><div class="js-form-item form-item js-form-type-textfield form-type-textfield"><span class="provider-icon icon_not_accepting-img"></span> <strong>' + Drupal.t('Not accepting new clients') +'</strong></div><div class="js-form-item form-item js-form-type-textfield form-type-textfield"><span class="provider-icon icon_verified-img"></span> <strong>' + Drupal.t('Verified Listing') +'</strong></div><br/>');
+
       // Ensure that the magnifying glass shows.
       if (!$('.path-search').length) {
         $('#edit-submit-search-solr-').hide();

@@ -104,3 +104,33 @@ label[for="edit-field-geolocation-2-proximity-current-location"] {
     flex-direction: column;
   }
 }
+
+.icon_accepting-img {
+  background-image: url('/modules/custom/jma_customizations/img/icon_accepting_16px.png');
+}
+.icon_not_accepting-img {
+  background-image: url('/modules/custom/jma_customizations/img/icon_not_accepting_16px.png');
+}
+.icon_local_travel-img {
+  background-image: url('/modules/custom/jma_customizations/img/icon_local_travel_16px.png');
+}
+.icon_remote_travel-img {
+  background-image: url('/modules/custom/jma_customizations/img/icon_remote_travel_16px.png');
+}
+.icon_videoconferencing-img {
+ background-image: url('/modules/custom/jma_customizations/img/icon_videoconferencing_16px.png');
+}
+.icon_verified-img {
+ background-image: url('/modules/custom/jma_customizations/img/icon_verified_16px.svg');
+}
+
+.provider-icon {
+    width: 30px;
+    height: 16px;
+    display: inline-block;
+    cursor: default;
+    overflow: visible;
+    background-repeat: no-repeat;
+    background-position: center center;
+    margin-top: 5px;
+}
