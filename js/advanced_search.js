@@ -17,6 +17,11 @@
         $('div.attachment-before').hide();
       }
 
+      $('label[for=edit-custom-897-2]').prepend('<span class="provider-icon icon_videoconferencing-img" title="' + Drupal.t('Online') + '"></span>');
+      $('label[for=edit-custom-897-3]').prepend('<span class="provider-icon icon_local_travel-img" title="' + Drupal.t('Travels to nearby areas') + '"></span>');
+      $('label[for=edit-custom-897-4]').prepend('<span class="provider-icon icon_remote_travel-img" title="' + Drupal.t('Travels to remote areas') + '"></span>');
+      $('#block-legend').addClass('block-facet--links');
+
       // Ensure that the magnifying glass shows.
       if (!$('.path-search').length) {
         $('#edit-submit-search-solr-').hide();
