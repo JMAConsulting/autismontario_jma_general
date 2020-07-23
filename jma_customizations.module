@@ -450,7 +450,7 @@ function jma_customizations_form_alter(&$form, \Drupal\Core\Form\FormStateInterf
       FROM civicrm_event e
       INNER JOIN civicrm_option_value v ON v.value = e.event_type_id
       INNER JOIN civicrm_option_group g ON g.id = v.option_group_id
-      WHERE e.id IN (SELECT id FROM civicrm_event WHERE DATE_FORMAT(start_date, '%Y-%m-%d') >= CURRENT_DATE() AND is_active = 1)
+      WHERE e.id IN (SELECT id FROM civicrm_event WHERE DATE_FORMAT(end_date, '%Y-%m-%d') >= CURRENT_DATE() AND is_active = 1)
       AND g.name = 'event_type' GROUP BY v.value ORDER BY v.label")->fetchAll();
     foreach ($eventTypes as $eventType) {
       if ($eventType['name'] == "Fundraising with multi pax event") {
