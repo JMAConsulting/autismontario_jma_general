@@ -440,8 +440,10 @@ function jma_customizations_preprocess_html(&$variables) {
 function jma_customizations_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
   if ($form_id === "views_exposed_form" && $form['#id'] == "views-exposed-form-events-page-1") {
     $anyText = '- Any - ';
+    $fundRaisingText = 'Fundraising';
     if (\Drupal::languageManager()->getCurrentLanguage()->getId() == 'fr') {
       $anyText = '- Tous -';
+      $fundRaisingText = 'Collecte de fonds';
     }
     $options = [
       'All' => $anyText,
@@ -454,7 +456,7 @@ function jma_customizations_form_alter(&$form, \Drupal\Core\Form\FormStateInterf
       AND g.name = 'event_type' GROUP BY v.value ORDER BY v.label")->fetchAll();
     foreach ($eventTypes as $eventType) {
       if ($eventType['name'] == "Fundraising with multi pax event") {
-        $eventType['label'] = "Fundraiser";
+        $eventType['label'] = $fundRaisingText;
       }
       $options[$eventType['value']] = $eventType['label'];
     }
