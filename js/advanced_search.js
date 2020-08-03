@@ -17,10 +17,11 @@
         $('div.attachment-before').hide();
       }
 
-      $('label[for=edit-custom-897-2]').prepend('<span class="provider-icon icon_videoconferencing-img" title="' + Drupal.t('Online') + '"></span>');
-      $('label[for=edit-custom-897-3]').prepend('<span class="provider-icon icon_local_travel-img" title="' + Drupal.t('Travels to nearby areas') + '"></span>');
-      $('label[for=edit-custom-897-4]').prepend('<span class="provider-icon icon_remote_travel-img" title="' + Drupal.t('Travels to remote areas') + '"></span>');
-      $('#block-legend').addClass('block-facet--links');
+      $('#block-legend h2').css({"content": "", "display": "block", "width": "265px", "padding-top": "0.5em", "border-bottom": "2px solid #abad00"});
+      $('#block-legend').css({"padding": "1.5em 2em", "border-radius": "4px", "border": "solid 1px #dcdcdc", "background-color": "white","box-shadow": "0 0 20px -5px rgba(0,0,0,0.1),0 0 20px -5px rgba(0,0,0,0.1)", "margin-bottom": "1.25em"});
+      $('#block-legend table td').css({"padding": "unset", "border": "none"});
+      $('table td').css({"background": "none !important"});
+      $('.view-content:eq(1)').prepend($('#block-legend'));
 
       // Ensure that the magnifying glass shows.
       if (!$('.path-search').length) {

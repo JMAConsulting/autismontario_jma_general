@@ -134,3 +134,13 @@ label[for="edit-field-geolocation-2-proximity-current-location"] {
     background-position: center center;
     margin-top: 5px;
 }
+
+.block-facet--links {
+    padding: 1.5em 2em;
+    border-radius: 4px;
+    border: solid 1px #dcdcdc;
+    background-color: white;
+    -webkit-box-shadow: 0 0 20px -5px rgba(0,0,0,0.1),0 0 20px -5px rgba(0,0,0,0.1);
+    box-shadow: 0 0 20px -5px rgba(0,0,0,0.1),0 0 20px -5px rgba(0,0,0,0.1);
+    margin-bottom: 1.25em;
+}
