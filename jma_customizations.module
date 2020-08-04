@@ -468,7 +468,7 @@ function jma_customizations_form_alter(&$form, \Drupal\Core\Form\FormStateInterf
   }
 }
 
-function jma_customizations_views_pre_render(ViewExecutable &$view) {
+function jma_customizations_views_pre_render(ViewExecutable $view) {
   if ($view->id() == 'event_map') {
     $view->element['#attached']['library'][] = 'jma_customizations/jma_customizations';
     $results = $view->result;
@@ -544,7 +544,7 @@ function jma_customizations_views_pre_render(ViewExecutable &$view) {
 /**
  * Implements hook_views_pre_execute().
  */
-function jma_customizations_views_pre_execute(ViewExecutable &$view) {
+function jma_customizations_views_pre_execute(ViewExecutable $view) {
   if ($view->id() == 'event_location') {
     $query = &$view->build_info['query'];
     $ids = explode(' ', $view->args[0]);
