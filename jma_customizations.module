@@ -153,15 +153,17 @@ function jma_customizations_preprocess_views_view_field(&$variables) {
         $variables['output'] = implode(',', $parts);
       }
       if ($field->field === 'custom_895') {
-        $serviceProviderEventses = \CRM_Core_DAO::executeQuery("SELECT a.id as `id`, a.camp_session_name_858 as `Camp_Session_Name`, a.from_859 as `From`, a.to_860 as `To`, a.entity_id as `entity_id`
-          FROM civicrm_value_service_listi_72 a
-          WHERE (`a`.`entity_id` = %1)", [1 => [$view->args[0], 'Positive']])->fetchAll();
-        if (!empty($serviceProviderEventses)) {
-          $variables['output'] .= '</span></div><div class="views-field views-field-event-camp"><h4>Camp Sessions</h4>';
-          foreach ($serviceProviderEventses as $event) {
-            $variables['output'] .= '<div class="views-field">' . $event['Camp_Session_Name'] . '<br>' . getCampDates($event['From'], $event['To']) . '</div>';
+        if (!empty($view->args)) {
+          $serviceProviderEventses = \CRM_Core_DAO::executeQuery("SELECT a.id as `id`, a.camp_session_name_858 as `Camp_Session_Name`, a.from_859 as `From`, a.to_860 as `To`, a.entity_id as `entity_id`
+            FROM civicrm_value_service_listi_72 a
+            WHERE (`a`.`entity_id` = %1)", [1 => [$view->args[0], 'Positive']])->fetchAll();
+          if (!empty($serviceProviderEventses)) {
+            $variables['output'] .= '</span></div><div class="views-field views-field-event-camp"><h4>Camp Sessions</h4>';
+            foreach ($serviceProviderEventses as $event) {
+              $variables['output'] .= '<div class="views-field">' . $event['Camp_Session_Name'] . '<br>' . getCampDates($event['From'], $event['To']) . '</div>';
+            }
+            $variables['output'] .= '</div>';
           }
-          $variables['output'] .= '</div>';
         }
       }
       $variables['output'] = \Drupal\Core\Render\Markup::create($variables['output']);
