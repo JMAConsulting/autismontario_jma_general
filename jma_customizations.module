@@ -828,3 +828,12 @@ function geocode($address) {
 
   return $result;
 }
+
+function jma_customizations_civicrm_alter_drupal_entities(&$supportedEntities) {
+  $supportedEntities['civicrm_contact']['permissions']['view'] =
+    $supportedEntities['civicrm_address']['permissions']['view'] =
+      $supportedEntities['civicrm_email']['permissions']['view'] =
+        $supportedEntities['civicrm_website']['permissions']['view'] =
+          $supportedEntities['civicrm_phone']['permissions']['view'] =
+           $supportedEntities['civicrm_relationship']['permissions']['view'] =  ['view event info'];
+}
