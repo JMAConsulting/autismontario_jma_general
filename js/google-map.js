@@ -34,16 +34,22 @@
   $('.view-display-id-attachment_1').on('click', function(e) {
     var contactIds = '';
     var eventIds = '';
+    var count = 0;
     e.preventDefault();
     $('.geolocation-map-wrapper .geolocation-location').each(function(e) {
       var type = $('.location-content > .views-field-search-api-datasource .field-content', $(this)).text();
+      if (count > 250) {
+        return;
+      }
       if (type == 'entity:civicrm_event') {
         var id = $('.location-content > .views-field-id-1 .field-content', $(this)).text();
         eventIds = eventIds == '' ? id : eventIds + '+' + id;
+        count++;
       }
       else if (type == 'entity:civicrm_contact') {
         var id = $('.location-content > .views-field-id .field-content', $(this)).text();
         contactIds = contactIds == '' ? 'contact' + id : contactIds + '+contact' + id;
+        count++;
       }
     });
     if (contactIds != '' || eventIds != '') {
