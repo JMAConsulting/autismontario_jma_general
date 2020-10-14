@@ -104,7 +104,8 @@ function jma_customizations_preprocess_views_view_field(&$variables) {
               }
               $creds =  implode(', ', $creds);
               $creds = $creds !== '' ? '(' . $creds . ')' : '';
-              $contacts[$employees['sort_name']] = sprintf('<div>%s %s %s</div>', '<img src="'. file_create_url($modulePath . '/img/icon_verified_24px.svg') . '" title="' . t('Verified listing') . '"> ', $employees['display_name'], $creds);
+              $verfiedIcon = $creds == '' ? '' : '<img src="'. file_create_url($modulePath . '/img/icon_verified_24px.svg') . '" title="' . t('Verified listing') . '"> ';
+              $contacts[$employees['sort_name']] = sprintf('<div>%s %s %s</div>', $verfiedIcon, $employees['display_name'], $creds);
             }
           }
         }
