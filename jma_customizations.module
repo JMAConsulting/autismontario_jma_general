@@ -73,6 +73,7 @@ function jma_customizations_preprocess_views_view_field(&$variables) {
         $contactDetails = \civicrm_api3('Relationship', 'get', [
           'contact_id_b' => $view->args[0],
           'relationship_type_id' => 5,
+          'is_active' => 1,
           'sequential' => 1,
           'api.Contact.get' => [
             'id' => "\$value.contact_id_a",
