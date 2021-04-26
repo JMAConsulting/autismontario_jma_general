@@ -38,9 +38,6 @@ class SearchAPIJmaField extends FieldPluginBase {
       if ($field_type == 'text') {
         // Create a new array with text values instead of objects.
         foreach ($field_values as $field_value) {
-          if ($derivative_id == "custom_897" || $derivative_id == "custom_954") {
-            \Drupal::logger('graphql_search_api')->notice('values %values class %class', ['%values' => json_encode($field_value), '%class' => get_class($field_value)]);
-          }
           $value[] = $field_value->getText();
         }
       }
