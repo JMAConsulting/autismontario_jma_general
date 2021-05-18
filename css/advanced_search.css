@@ -144,3 +144,15 @@ label[for="edit-field-geolocation-2-proximity-current-location"] {
     box-shadow: 0 0 20px -5px rgba(0,0,0,0.1),0 0 20px -5px rgba(0,0,0,0.1);
     margin-bottom: 1.25em;
 }
+
+li.facet-item {
+  list-style-type: none;
+}
+
+input.facets-checkbox:not(:checked) + label {
+  font-weight: normal;
+}
+
+input.facets-checkbox {
+  margin-right: 10px;
+}
