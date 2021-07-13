@@ -31,6 +31,8 @@ function jma_customizations_css_alter(&$css, \Drupal\Core\Asset\AttachedAssetsIn
         "civicrm/service-listing-application-confirm",
         "civicrm/service-listing-thankyou",
         "civicrm/grant/transact",
+        "civicrm/mailing/optout",
+        "civicrm/mailing/unsubscribe",
     ];
     if (strpos($current_uri, 'civicrm') !== false && !in_array($current_uri, $paths)) {
         unset($css['themes/contrib/adminimal_theme/css/adminimal.css']);
