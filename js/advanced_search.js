@@ -3,7 +3,7 @@
       $('#block-exposedformsearch-solr-page-1 #edit-container-container-0--2').insertAfter($('#edit-container-container-1--2 #edit-custom-898--3--wrapper'));
       $('#block-exposedformsearch-solr-page-1 #edit-container-container-4--2').insertAfter($('#edit-container-container-1--2 #edit-custom-898--2--wrapper'));
       $('#edit-field-geolocation-2-proximity-wrapper--3').insertAfter($('#edit-container-container-2--2 .details-wrapper'));
-      $('#edit-field-geolocation-2-proximity-wrapper--3 legend').hide();
+      $('#edit-field-geolocation-2-proximity-wrapper--3 legend, #masthead-secondary #edit-field-geolocation-2-proximity-wrapper').hide();
 
       var simpleSearchLink = "<a href='#' id='simple-search' style='color:#006ba6;float:right;display:none;'>" + Drupal.t('Simple Search') + "</a>";
       var advanceSearchLink = "<a href='#' id='advance-search' style='color:#006ba6;float:right;'>" + Drupal.t('Advanced Search') + "</a>";
