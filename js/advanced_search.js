@@ -1,13 +1,15 @@
 (function($, Drupal) {
    $(document).ready(function() {
-      $('#block-exposedformsearch-solr-page-1 #edit-container-container-0').insertAfter($('#edit-container-container-1 #edit-custom-898--wrapper'));
+      $('#block-exposedformsearch-solr-page-1 #edit-container-container-0--2').insertAfter($('#edit-container-container-1--2 #edit-custom-898--3--wrapper'));
       $('#block-exposedformsearch-solr-page-1 #edit-container-container-4--2').insertAfter($('#edit-container-container-1--2 #edit-custom-898--2--wrapper'));
+      $('#edit-field-geolocation-2-proximity-wrapper--3').insertAfter($('#edit-container-container-2--2 .details-wrapper'));
+      $('#edit-field-geolocation-2-proximity-wrapper--3 legend').hide();
+
       var simpleSearchLink = "<a href='#' id='simple-search' style='color:#006ba6;float:right;display:none;'>" + Drupal.t('Simple Search') + "</a>";
       var advanceSearchLink = "<a href='#' id='advance-search' style='color:#006ba6;float:right;'>" + Drupal.t('Advanced Search') + "</a>";
       $('#block-exposedformsearch-solr-page-1 .form-item-search-api-fulltext').append(simpleSearchLink);
       $('#block-exposedformsearch-solr-page-1 .form-item-search-api-fulltext').append(advanceSearchLink);
-      $('#block-exposedformsearch-solr-page-1 #edit-container-container-1').hide();
-
+      $('#block-exposedformsearch-solr-page-1 #edit-container-container-1--2').hide();
       $('.geolocation-latlng').each(function (e) {
         var link = '<a target="_blank" href="https://www.google.com/maps?saddr=My+Location&daddr=' + $(this).text().replace(' ', '') + '"><img alt="Directions" src="//www.gstatic.com/images/icons/material/system/2x/directions_gm_blue_20dp.png"></a>';
         $(this).html(link);
@@ -22,7 +24,6 @@
       $('#block-legend table td').css({"padding": "unset", "border": "none"});
       $('table td').css({"background": "none !important"});
       $('.view-content:eq(1)').prepend($('#block-legend'));
-
       // Ensure that the magnifying glass shows.
       if (!$('.path-search').length) {
         $('#edit-submit-search-solr-').hide();
@@ -30,22 +31,22 @@
       }
 
       $('#simple-search').on('click', function(e) {
-        $('#block-exposedformsearch-solr-page-1 #edit-container-container-1').hide();
+        $('#block-exposedformsearch-solr-page-1 #edit-container-container-1--2').hide();
         $('#advance-search').show();
         $(this).hide();
       });
       $('#advance-search').on('click', function(e) {
-        $('#block-exposedformsearch-solr-page-1 #edit-container-container-1').show();
+        $('#block-exposedformsearch-solr-page-1 #edit-container-container-1--2').show();
         $('#simple-search').show();
         $(this).hide();
       });
       $('#edit-submit-search-solr-').on('click', function(e) {
         if ($('#advance-search').is(':visible')) {
-          $('#edit-container-container-1 input').each(function (e) {
+          $('#edit-container-container-1--2 input').each(function (e) {
             $(this).val('');
             $(this).prop('checked', false);
           });
-          $('#edit-container-container-1 select option').each(function (e) {
+          $('#edit-container-container-1--2 select option').each(function (e) {
             $(this).prop('selected', false);
           });
         }

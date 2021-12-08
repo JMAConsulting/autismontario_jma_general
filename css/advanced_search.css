@@ -1,5 +1,6 @@
 #block-exposedformsearch-solr-page-1-2 .views-ef-fieldset-container-1,
 #block-exposedformsearch-solr-page-1-2 .views-ef-fieldset-container-0,
+#block-exposedformsearch-solr-page-1-2 #edit-field-geolocation-2-proximity-wrapper--3,
 .form-item-field-geolocation-2-proximity-center-long,
 .form-item-field-geolocation-2-proximity-center-lat
  {
@@ -47,7 +48,6 @@ label[for="edit-field-geolocation-2-proximity-current-location"] {
     left: 0px;
     top: 0px;
     width: 350px !important;
-    text-align: right;
     display: block !important;
   }
 
@@ -72,10 +72,6 @@ label[for="edit-field-geolocation-2-proximity-current-location"] {
     width: 36% !important;
   }
 
-  .fieldset-wrapper {
-    margin-top: -24px;
-  }
-
   #edit-custom-899:lang(fr), #edit-custom-899--2:lang(fr) {
     width: 125px !important;
   }
@@ -93,6 +89,10 @@ label[for="edit-field-geolocation-2-proximity-current-location"] {
   label[for=edit-custom-891], label[for=edit-custom-892], label[for=edit-custom-891--2], label[for=edit-custom-892--2] {
     width: 40px !important;
   }
+}
+
+#edit-field-geolocation-2-proximity-wrapper--3 {
+  border-color: white !important;
 }
 
 @media screen and (max-width: 1200px) {
