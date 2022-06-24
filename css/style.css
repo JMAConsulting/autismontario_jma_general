@@ -70,6 +70,7 @@ a:hover {
   text-decoration: underline;
 }
 
+.block-exposedformsearch-solr-page-1 .js-form-type-textfield input:not(#edit-search-api-fulltext),
 .block-exposedformsearch-solr-page-1 .js-form-type-textfield input:not(#edit-search-api-fulltext--3) {
   width: auto !important;
 }
