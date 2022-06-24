@@ -544,6 +544,30 @@ function jma_customizations_views_pre_render(ViewExecutable $view) {
     $view->element['#attached']['library'][] = 'jma_customizations/jma_customizations';
     $view->element['#attached']['library'][] = 'jma_customizations/service_listing';
     $view->element['#attached']['library'][] = 'jma_customizations/search_facet';
+    if ($view->id() == 'search_solr_') {
+      $search_api_facets = $view->query->getSearchApiResults()->getExtraData('search_api_facets', []);
+      $facet_manager = \Drupal::service('facets.manager');
+      $facet_storage = \Drupal::entityTypeManager()->getStorage('facets_facet');
+      $facet = $facet_storage->load('type');
+      $processed = $facet_manager->returnProcessedFacet($facet);
+      $items = $facet_manager->build($processed);
+      $showServiceListingLegend = TRUE;
+      // if we have no type facet or Service Listing does not exist in the facet OR it does but is not an active item if there are any then we hide the lengend
+      if (empty($search_api_facets['type'])) {
+        $showServiceListingLegend = FALSE;
+      }
+      else {
+        if (!empty($processed->getActiveItems()) && !$processed->isActiveValue('Service Listing')) {
+          $showServiceListingLegend = FALSE;
+        }
+        if (array_search('"Service Listing"', array_column($search_api_facets['type'], 'filter')) === FALSE) {
+          $showServiceListingLegend = FALSE;
+        }
+      }
+      if (!$showServiceListingLegend) {
+        $view->element['#attached']['library'][] = 'jma_customizations/service_listing_legend';
+      }
+    }
   }
 }
 
