@@ -117,7 +117,7 @@ class AfterLoginEventSubscriber implements EventSubscriberInterface {
       // i.e. it's not set.
       // This ensures our code still runs when the user login form block
       // is placed on other pages.
-      if ($current_raw_path === $destination_path) {
+      if ($current_raw_path === $destination_path && !in_array($current_route, ['user.reset', 'user.reset.login'])) {
         // Redirect user on login, based on role (last in array).
         $current_user_roles = $this->account->getRoles();
        
