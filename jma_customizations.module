@@ -762,6 +762,9 @@ function solr_address_geocoder($form, FormStateInterface $form_state) {
       $address[] = $values['field_geolocation_2_proximity'][$key];
     }
   }
+  // Limit to Ontario Canada.
+  $address[] = 'ON';
+  $address[] = 'CA';
   $address = implode(',', $address);
   if (!empty($address)) {
     $result = geocode($address);

@@ -9,6 +9,7 @@
       var advanceSearchLink = "<a href='#' id='advance-search' style='color:#006ba6;float:right;'>" + Drupal.t('Advanced Search') + "</a>";
       $('#block-exposedformsearch-solr-page-1 .form-item-search-api-fulltext').append(simpleSearchLink);
       $('#block-exposedformsearch-solr-page-1 .form-item-search-api-fulltext').append(advanceSearchLink);
+
       $('#block-exposedformsearch-solr-page-1 #edit-container-container-1--2').hide();
       $('.geolocation-latlng').each(function (e) {
         var link = '<a target="_blank" href="https://www.google.com/maps?saddr=My+Location&daddr=' + $(this).text().replace(' ', '') + '"><img alt="Directions" src="//www.gstatic.com/images/icons/material/system/2x/directions_gm_blue_20dp.png"></a>';
@@ -24,6 +25,7 @@
       $('#block-legend table td').css({"padding": "unset", "border": "none"});
       $('table td').css({"background": "none !important"});
       $('.view-content:eq(1)').prepend($('#block-legend'));
+
       // Ensure that the magnifying glass shows.
       if (!$('.path-search').length) {
         $('#edit-submit-search-solr-').hide();
