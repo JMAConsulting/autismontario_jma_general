@@ -157,6 +157,9 @@ class GeolocationProximityViewsFilter extends FilterPluginBase implements Contai
             $address[] = $this->value[$key];
           }
         }
+        // Limit to Ontario,Canada.
+        $address[] = 'ON';
+        $address[] = 'CA';
         $address = implode(',', $address);
         if (!empty($address)) {
           $result = $this->geocoder($address);
