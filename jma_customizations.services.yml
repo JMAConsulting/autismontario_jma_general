@@ -1,0 +1,6 @@
+services:
+  jma_customizations.eventsubscriber:
+    class: Drupal\jma_customizations\EventSubscriber\AfterLoginEventSubscriber
+    arguments: ['@current_user', '@config.factory', '@redirect.destination', '@path.current', '@path.matcher']
+    tags:
+      - { name: event_subscriber }
