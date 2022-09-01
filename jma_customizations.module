@@ -633,22 +633,6 @@ function jma_customizations_views_pre_execute(ViewExecutable $view) {
   }
 }
 
-function jma_customizations_user_login($account) {
-  $current_route = \Drupal::routeMatch()->getRouteName();
-  $destination = \Drupal::request()->query->get('destination');
-  if ($destination && $destination != '/user/login') {
-    return;
-  }
-  if (!in_array($current_route, ['user.reset', 'user.reset.login'])) {
-    $current_user = \Drupal::currentUser();
-    $roles = (array) $current_user->getRoles();
-    if (in_array('authorized_contact', $roles)) {
-      $response = new Symfony\Component\HttpFoundation\RedirectResponse(\Drupal\Core\URL::fromUserInput('/civicrm/service-listing-application')->toString());
-      $response->send();
-    }
-  }
-}
-
 /**
  * @param \Drupal\user\UserInterface $user
  *
@@ -704,7 +688,6 @@ function getCampDates($from, $to) {
   }
   return $content;
 }
-
 
 function jma_customizations_views_data_alter(&$data) {
   /** @var \Drupal\search_api\IndexInterface $index */
@@ -785,6 +768,11 @@ function solr_address_geocoder($form, FormStateInterface $form_state) {
     if (!empty($values['field_geolocation_2_proximity'][$key])) {
       $address[] = $values['field_geolocation_2_proximity'][$key];
     }
+  }
+  // Limit to Ontario Canada only when other address field information is supplied
+  if (!empty($address)) {
+    $address[] = 'ON';
+    $address[] = 'CA';
   }
   $address = implode(',', $address);
   if (!empty($address)) {
