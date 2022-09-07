@@ -24,3 +24,9 @@ advanced_search:
   css:
     theme:
       css/advanced_search.css: {}
+
+service_listing_legend:
+  version: 1.0
+  css:
+    theme:
+      css/hide_service_listing_legend.css: {}
